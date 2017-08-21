@@ -1,0 +1,453 @@
+﻿<Window x:Class="Mylly.MainWindow" x:Name="Ikkuna"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Mylly"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="800"
+        MinHeight="500"
+        MinWidth="500"
+        DataContext="{StaticResource ViewModelli}"
+        local:MyllyViewModel.RegisterCommandBindings="{Binding CommandBindings}">
+    <!-- Laitetaan viewmodel ikkunan datacontextiksti. "Ladataan" command bindingsit viewmodelista attached propertyyn. ViewModelin on hyvä olla ikkunan datacontekstina, sillä 
+         datacontexti periytyy ikkunalta alemmille controlleille, ja näin saadaa lähes jokaisen controllin DataContext viittaamaan viewmodelliin. Aina se ei onnistu, tai en ainakaan itse saanut 
+         sitä tomiimaan niin hienosti, mutta silloin kun sen toimii, niin se on kätevää. Muussatapauksessa pitää bindata relative sourcena pääikkunaan, ja sitten pääsee käsiksi pääikkunan 
+         datacontextiin eli modelviewiin. Modeliview on siis tällä tavalla tehtynä melkolailla globaali objekti. ViewModellin voi myös lisätä kooditasolla pääikkunan DataContextiksi, mutta nyt 
+         on hifistelty ja tehty monimukaisesti tämä, jotta vältyttäisiin itse c# koodin kirjoittamiselta pääikkunaan. Näin viewmodellin "importaaminen" xamliin on helppoa. 
+         Jos päätyy siihen, että asettaa kooditasolla viewmodellin pääikkunan datacontextiksi, niin tällöin kannattaa tehdä myös command bindaukset myös esim. pääikkunakoodissa. Nyt nämä bindaukset on tehty 
+         modelviewissä erillisenä metodina, joka liittää kaikki commandbindaukset viewmodelliin, ja kikkailemalla attachedpropertyn kanssa saadaan sitä kautta ujutettua mainwindowiin. Kts. esimerkkiä 
+         viewmodel luokasta. -->
+    <!-- Tähän tulee pelilaudan resursseja. -->
+    <Window.Resources>
+        
+        <!-- Viivan perusominaisuudet. Onpahan nyt yhdessä paikassa. -->
+        <Style x:Key="LineProperties" TargetType="{x:Type Line}">
+            <Setter Property="StrokeThickness" Value="4"/>
+            <Setter Property="Stroke" Value="Black"/>
+        </Style>
+        <!-- Koko solun mittaisen vaakasuoraisen viivan tyyli. Tyhmää copypastea. Olisi kivempi tehdä kooditasolla. -->
+        <Style x:Key="FullVerticalLine" BasedOn="{StaticResource LineProperties}" TargetType="{x:Type Line}">
+            <Setter Property="X1" Value="0.0"/>
+            <Setter Property="X2" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=ActualWidth}"/>
+            <Setter Property="Y1" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=HalfHeight}"/>
+            <Setter Property="Y2" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=HalfHeight}"/>
+        </Style>
+        <!-- Koko solun mittaisen horizontaalinen viivan tyyli. Tyhmää copypastea. Tähän pitäisi olla jokin muu keino, vai mitä? -->
+        <Style x:Key="FullHorizontalLine" BasedOn="{StaticResource LineProperties}" TargetType="{x:Type Line}">
+            <Setter Property="X1" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=HalfWidth}"/>
+            <Setter Property="X2" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=HalfWidth}"/>
+            <Setter Property="Y1" Value="0"/>
+            <Setter Property="Y2" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=ActualHeight}"/>
+        </Style>
+        <!-- Keskeltä oikealle menevä viiva.-->
+        <Style x:Key="RightLine" BasedOn="{StaticResource FullVerticalLine}" TargetType="{x:Type Line}">
+            <Setter Property="X1" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=HalfWidth}"/>
+        </Style>
+        <!-- Keskeltä vasemmalle menevä viiva. Onneksi voi sentään periä tyylejä. Vähentää hieman copy pastea.-->
+        <Style x:Key="LeftLine" BasedOn="{StaticResource FullVerticalLine}" TargetType="{x:Type Line}">
+            <Setter Property="X2" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=HalfWidth}"/>
+        </Style>
+        <!-- Keskeltä ylös menevä viiva.-->
+        <Style x:Key="UpLine" BasedOn="{StaticResource FullHorizontalLine}" TargetType="{x:Type Line}">
+            <Setter Property="Y2" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=HalfHeight}"/>
+        </Style>
+        <!-- Keskeltä alas menevä viiva.-->
+        <Style x:Key="DownLine" BasedOn="{StaticResource FullHorizontalLine}" TargetType="{x:Type Line}">
+            <Setter Property="Y1" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=HalfHeight}"/>
+        </Style>
+    </Window.Resources>
+
+    <!-- Varsinainen käyttöliittymä alkaa tästä.-->
+    <Grid>
+        <!-- Koko ikkunan rivien määrittelyt. Yläosa on varattu menuille -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/> <!-- Tämä on varattu pelikentälle ja pelaajien pöydälle. -->
+            <RowDefinition Height="40"/> <!-- Laitetaan tänne alas teksti, joka ohjaa pelaajaa pelamaan. -->
+        </Grid.RowDefinitions>
+
+        <!-- Tähän tulee valikko.-->
+        <Menu IsMainMenu="True" Grid.Row="0">
+            <MenuItem Header="_File">
+                <MenuItem Command="local:MyllyViewModel.NewGame"/>
+                <MenuItem Command="local:MyllyViewModel.Print"/>
+                <!-- MenuItem Command="local:MyllyViewModel.PrintFull"/--> <!-- Jätetään myös PrintFull pois ohjelmasta, sillä sitä ei koskaan toteutettu, mutta sitä vastaava routed command on olemassa 
+                     view modellissa, jos sen haluaisi toteuttaa. -->
+            </MenuItem>
+            <!-- Kommentoidaan pelin menut. Niitä ei nyt tarvita. Näitä olisi tarvittu tason 1 suorituksessa.
+            <MenuItem Header="_Game">
+                <MenuItem Command="local:MyllyViewModel.InsertPiece"/>
+                <MenuItem Command="local:MyllyViewModel.RemovePiece"/>
+                <MenuItem Command="local:MyllyViewModel.MovePiece"/>
+            </MenuItem>
+            -->
+            <MenuItem Header="_Tools">
+                <MenuItem Command="local:MyllyViewModel.SettingsCommand"/>
+            </MenuItem>
+            <MenuItem Header="About">
+                <MenuItem Command="local:MyllyViewModel.AboutCommand"/>
+                <MenuItem Command="local:MyllyViewModel.HelpCommand"/>
+            </MenuItem>
+            
+        </Menu>
+        <!-- Tähän tulee pelialustat sun muut.-->
+        <Grid Grid.Row="1">
+            <!-- Laitetaan tähän pelaajan nimen tyyli (yleiset ominaisuudet). Tyylin tarkennus pelaajien nimille tulee myöhemmin. -->
+            <Grid.Resources>
+                <Style TargetType="{x:Type TextBlock}" x:Key="TextBlockStyle">
+                    <Setter Property="Background" Value="Cornsilk"/>
+                    <Setter Property="VerticalAlignment" Value="Stretch"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="Padding" Value="1,1,1,3"/>
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect ShadowDepth="1" Direction="330" Color="Black" Opacity="0.8" BlurRadius="2"/>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0"/>
+                <!-- Tämä on gridin paikka varattu voittotekstille.-->
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <!-- Pelikentän jakauma. 1 osaset ovat varattuja sivupaneeleille, joissa on pelaajien nappulat. 4 osa on varattu itse pelikentälle. -->
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <!-- VOITTO tuulahdus. Heres your winner ääni kuuluu. Bindataan tekstiin voittajan nimi ja teksti heiluu edestakaisin sekä sivu- että pystysuunnasssa. Ei skaalaudu, jos ikkunan kokoa muuttaa. 
+                 Jotta sen olisi saanut toimimaan, olisi pitänyt tehdä routed event ikkunan koon muuttamiselle ja aloittaa uusi animaatio uusilla From To arvoilla. 
+                 Tätä ei ole nyt tehty, sillä on pyritty pitämään käyttöliittymää manipuloivaa koodia minimissään. Jotta routed eventit saisi järkevästi toimimaan siten, että 
+                 koodi olisi modelviewissä, olisi pitänyt asentaan 'interactivity' laajennus, prism tai jotain muuta vastaavaa apuvälineitä. En perehtynyt niiden toimintaan, mutta 
+                 jos haluaa vakavasti tehdä mvvm mallin mukaista ratkaisua, on pakko ottaa käyttöön laajennuksia. Muuten elämä menee liian vaikeaksi, kuten tässä projektissa 
+                 tuppaa käymään. -->
+            <Canvas x:Name="Voittotuuletus" Grid.Column="1" Grid.Row="1" Panel.ZIndex="1">
+                <TextBlock Text="{Binding TheWinner.PlayerName}" FontSize="60" FontWeight="Bold" Canvas.Top="0" x:Name="VoittoTekstiBlock">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Visibility" Value="Hidden"/>
+                            <Setter Property="RenderTransform" x:Name="VoittajaTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="0" x:Name="JuupasAngle"/>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsGameOver}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <DataTrigger.EnterActions>
+                                        <!-- Voitto huuto! -->
+                                        <SoundPlayerAction Source="pack://siteoforigin:,,,/sound/heres-your-winner.wav"/>
+                                        <!-- Voitto animaatio. -->
+                                        <BeginStoryboard x:Name="tt">
+                                            <Storyboard>
+                                                <DoubleAnimation                                                   
+                                                    Storyboard.TargetProperty="(Canvas.Left)"
+                                                    From="500" To="0" Duration="0:0:1"
+                                                    AutoReverse="True" RepeatBehavior="Forever">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <SineEase EasingMode="EaseIn"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                                <DoubleAnimation                                                   
+                                                    Storyboard.TargetProperty="(Canvas.Top)"
+                                                    From="500" To="0" Duration="0:0:3"
+                                                    AutoReverse="True" RepeatBehavior="Forever">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <SineEase EasingMode="EaseIn"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                                <DoubleAnimation Storyboard.TargetProperty="(TextBlock.RenderTransform).(RotateTransform.Angle)"
+                                                                 From="0.0" To="360.0" Duration="0:0:5"
+                                                                 AutoReverse="False" RepeatBehavior="Forever">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <SineEase EasingMode="EaseIn"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                                <ColorAnimation
+                                                     Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                                     From="Red" To="DarkRed" Duration="0:0:0.5"
+                                                     AutoReverse="True" RepeatBehavior="Forever"/>                                                   
+                                                
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <RemoveStoryboard  BeginStoryboardName="tt"></RemoveStoryboard>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Canvas>
+            <!-- Tähän tulee varsinainen pelialusta. Tarvittava data bindataan ViewModelista. -->
+            <Border Grid.Row="1" Grid.Column="1" BorderThickness="4" BorderBrush="Orange" Margin="4,4,4,4" CornerRadius="5" x:Name="GameBorder">
+                <ItemsControl ItemsSource="{Binding ElementName=Ikkuna, Path=DataContext.MVBlocks}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <!-- Pelilaudan leveys ja kokeus (gridi verkon dimensiot) saadaan viewmodellista. -->
+                            <UniformGrid Rows="{Binding Path=GameRowCount}" 
+                                         Columns="{Binding Path=GameColumnCount}"
+                                         SnapsToDevicePixels="True"
+                                         UseLayoutRounding="False"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+
+                        <!-- Tässä on nyt yksittäisen "ruudun" eli blockin datatemplate. Se mitä piirretään määräytyy hyvin pitkälle datatriggereissä, jossa block-olion Dependencypropertyt määräävät mitä 
+                             canvaksen viivoista, pallukasta tai pelinappulasta piirretään. -->
+                        <DataTemplate DataType="{x:Type local:Block}">
+                            <local:MyCanvas Margin="0,0,0,0" x:Name="BlockCanvas">
+                                <local:MyCanvas.Background>
+                                    <Binding ElementName="Ikkuna" Path="DataContext.GameBoardColor" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                                </local:MyCanvas.Background>
+                                <!-- Lisätään canvakseen kaikki 4 erisuuntaan menevät mustat viivat. Kts. viivojen tyylit. -->
+                                <Line x:Name="VasenViiva" Style="{StaticResource LeftLine}"/>
+                                <Line x:Name="OikeaViiva" Style="{StaticResource RightLine}"/>
+                                <Line x:Name="YlosViiva" Style="{StaticResource UpLine}"/>
+                                <Line x:Name="AlasViiva" Style="{StaticResource DownLine}"/>
+                                <!-- Määritellän block-olion "HasObject" osiota, eli siis pelikentän pelipaikan (mustan pallukan) piirtämistä. Lisätään canvakseen viivojen kanssa. -->
+                                <Ellipse x:Name="Palleroinen">
+                                    <Ellipse.Style>
+                                        <Style TargetType="{x:Type Ellipse}">
+                                            <Setter Property="Fill" Value="Black"/>
+                                            <Setter Property="StrokeThickness" Value="2"/>
+                                            <Setter Property="Stroke" Value="Transparent"/>
+                                            <Setter Property="Height" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=ScaleHeight}"/>
+                                            <Setter Property="Width" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=ScaleWidth}"/>
+                                            <Setter Property="Canvas.Top" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=ScaleHeight}"/>
+                                            <Setter Property="Canvas.Left" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=ScaleWidth}"/>
+                                            <Setter Property="RenderTransform">
+                                                <Setter.Value>
+                                                    <TranslateTransform X="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MyCanvas}, Path=TranslateX}"
+                                                                        Y="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MyCanvas}, Path=TranslateY}"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <!-- Tässä on animaatio valitulle pelinappulapaikalle. Siis sellaisen pelinappulapaikan animaatio, joka on valittavissa. 
+                                                     Nappula vaihtaa vain hieman väriä ja kokoa, hitaasti. 
+                                                     Onhan tämä aniaatio vieläkin aika pelottava, varsinkin silloin kun useampi pelinappulapaikka on animoitu. Ehkä vain värin ja koon vaihto olisi 
+                                                     riittänyt. Olkoon nyt näin tällä kertaa... -->
+                                                <DataTrigger Binding="{Binding IsSelectable}" Value="True">
+                                                    <DataTrigger.EnterActions>
+                                                        <BeginStoryboard x:Name="tt">
+                                                            <Storyboard>
+                                                                <ColorAnimation
+                                                                        Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                                        From="Black" To="DarkSlateGray" Duration="0:0:3"
+                                                                        AutoReverse="True" RepeatBehavior="Forever"/>
+                                                                <DoubleAnimation 
+                                                                     Storyboard.TargetProperty="(Ellipse.StrokeThickness)"
+                                                                     From="0" To="10" Duration="0:0:3"
+                                                                     AutoReverse="True" RepeatBehavior="Forever"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.EnterActions>
+                                                    <DataTrigger.ExitActions>
+                                                        <RemoveStoryboard  BeginStoryboardName="tt"></RemoveStoryboard>
+                                                    </DataTrigger.ExitActions>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                    <!-- Tähän tulee blocking, tarkemmin määriteltynä blokissa olevan nappulapaikan vasemman hiirinäppäimen painalluksen, bindaus. 
+                                         Commandi haetaan nyt myllyviewmodelista. Huomaa, että vaikka commandit on asetettu ikkunaan modelviewin kautta attached propertyhässäkän muodossa, 
+                                         niin tässä täytyy nyt kuitenkin viitata suoraan modelviewin routed commandiin. -->
+                                    <Ellipse.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick"
+                                        Command="local:MyllyViewModel.InsertPieceSelection"
+                                        CommandParameter="{Binding}"/>
+                                        <!-- CommandParameter siis kertoo sen, mitä halutaan lähettää parametrina routed commandille. Tässä siis lähetetään parametrina tämä block-olio, jonka piirtämistä ja tapahtumia ollaan juuri määrittelemässä.-->
+                                    </Ellipse.InputBindings>
+                                </Ellipse>
+                                <!-- Pelikentällä oleva nappula. Lisätään se viimeisenä canvakseen. -->
+                                <local:GameNappula x:Name="PeliNappula" Visibility="Hidden" NappulaColor="{Binding Path=BlockOwner.PlayerColor}"
+                                                   NappulaType="{Binding Path=BlockOwner.PieceShapeId}"
+                                                   Width="{Binding ElementName=BlockCanvas, Path=ActualWidth}"
+                                                   Height="{Binding ElementName=BlockCanvas, Path=ActualHeight}">
+                                    <local:GameNappula.InputBindings>
+                                        <!-- Tänne tulee jälleen vasemman hiiren klikkaus, tällä kertaa bindattu GameNappula componenttiin. Ihmetystä herättää hieman se, että 
+                                             jotta tämän bindauksen saa toimimaan, niin täytyy vastaavanlaiset MouseBindaukset tehdä GameNappulan xamlissa, jokaiselle pelimerkin muodolle erikseen. 
+                                             Huonoa tässä on nyt se, että GameNappula olio on riippuvainen myös viewmodellista. Tässä olisi paikallaan mainitsemani laajennukset, jotka 
+                                             helpottaisivat tällaisissa tilanteissa. Mutta tässä ei nyt otettu käyttöön mitään ylimääräisiä laajennoksia, joten elämä on vaikeaa tältä osin. -->
+                                        <MouseBinding MouseAction="LeftClick"
+                                        Command="local:MyllyViewModel.InsertPieceSelection"
+                                        CommandParameter="{Binding}"/>
+                                        <!-- Taas viedään block olio parametrina. Tässä ei haluta vielä rouden commandille GameNappulaa, vaan viewmodel ymmärtää ainoastaan blockien päälle. -->
+                                    </local:GameNappula.InputBindings>
+                                </local:GameNappula>
+                            </local:MyCanvas>
+                            <!-- Tässä määritellään mitkä osat blokista piirretään. Esim, jos LeftWay on true, niin piirretään vasen viiva. Jos HasObject on true, niin piirretään 
+                                 pelimerkin paikka, eli musta pallukka ja niin edelleen. Kaikki siis on "piirretty" mutta oletusarvoisesti kaikki ovat piilossa. Tässä HasObject siis kertoo sen, 
+                                 että block sisältää pelimerkkipaikan. HasPiece property taas kertoo sen, että blockissa on pelimerkki. -->
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding Path=LeftWay}" Value="False">
+                                    <Setter TargetName="VasenViiva" Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=RightWay}" Value="False">
+                                    <Setter TargetName="OikeaViiva" Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=UpWay}" Value="False">
+                                    <Setter TargetName="YlosViiva" Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=DownWay}" Value="False">
+                                    <Setter TargetName="AlasViiva" Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=HasObject}" Value="False">
+                                    <Setter TargetName="Palleroinen" Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=HasPiece}" Value="True">
+                                    <Setter TargetName="PeliNappula" Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <!-- Eli tässä tutkitaan tilannetta, että jos pelimerkki on valittavissa, niin asetetaan GameNappulan property IsSelectableksi, mikä taas vaikuttaa siihen 
+                                     GameNappula xamlissa, miten pelimerkki piirretään. -->
+                                <DataTrigger Binding="{Binding Path=IsContentSelectable}" Value="True">
+                                    <Setter TargetName="PeliNappula" Property="IsSelectable" Value="True"/>
+                                </DataTrigger>
+                                <!-- Täytyy käyttää vähän mielikuvitusta, että saadaan piuha GameNappulan ja blockin property välille! Eli tässä, jos blockin sisältö on valittu, niin tällöin 
+                                     asetetaan GameNappulan IsSelect property trueksi. GameNappula taas tekee omat piirtonsa/juttunsa IsSelected propertyn mukaan. -->
+                                <DataTrigger Binding="{Binding Path=IsContentSelected}" Value="True">
+                                    <Setter TargetName="PeliNappula" Property="IsSelected" Value="True"/>
+                                </DataTrigger>
+
+                                <!-- Jos hiiri on pelipaikka pallukan kohdalla, niin... -->
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Palleroinen" Property="Stroke" Value="Green"/>
+                                </Trigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+            <!-- Tässä määritellään ykköspelaajan (vasemmanpuoleinen osa ikkunasta) puoli. -->
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <!-- Yläosasta 1 osa varataan pelaajan nimelle, ja 10 osa alapuolelta on varattu "kädessä" oleville pelimerkeille.-->
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="10*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                </Grid.ColumnDefinitions>
+                <!-- Tähän tulee 1 pelaajan nimi laatikoineen ja animaaitoineen. Kun 1 pelaajalla ei ole vuoroa, on laatikko pelaajan värin mukainen. Kun 1 pelaajalla on vuoro, niin tällöin 
+                     pelaajan nimi laatikoineen vaihtaa väriä (animaatio). 2. Pelaajalla on vastaavanlainen koodi (melkein copy/pastetettuna). Pelaajien värit ja nimet on vain bindattu eri 
+                     propertyihin. Fiksu ihminen olisi tehnyt ratkaisut, jossa ainakin animaatio ei olisi copy/pastetettu. TODO: Jos jää aikaa, niin refaktoroi animaatio yhteen paikkaan, jos vain onnistuu.-->
+                <Viewbox Grid.Row="0">
+                    <TextBlock x:Name="Pelaaja1TextBlock" Text="{Binding Path=Player1.PlayerName}" Foreground="{Binding Path=Player1.PlayerColor}">
+                        <TextBlock.Style>
+                            <!-- Tyyliä pelaajan 1 textblockille. Tuntuu vähän copypastemeiningiltä (katso 2 pelaajan vastaava koodi). Olkoon nyt näin ennen kuin keksin jotain parempaa. -->
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Player1.HasTurn}" Value="True">
+                                        <DataTrigger.EnterActions>
+                                            <BeginStoryboard x:Name="tt">
+                                                <Storyboard>
+                                                    <ColorAnimation
+                                                     Storyboard.TargetProperty="(TextBlock.Background).(SolidColorBrush.Color)"
+                                                     From="White" To="Red" Duration="0:0:0.5"
+                                                     AutoReverse="True" RepeatBehavior="Forever"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.EnterActions>
+                                        <DataTrigger.ExitActions>
+                                            <RemoveStoryboard  BeginStoryboardName="tt"></RemoveStoryboard>
+                                        </DataTrigger.ExitActions>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Viewbox>
+                <!-- Pelaajan 1 kädessä olevat nappulat. Nyt siis luodaan uniformgrid, jolle annetaan gridien dimensioksi (row=1 oletuksena, ja column on bindattu modelviewin StartingPiececound propertyyn. -->
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding Path=Player1Table}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="{Binding StartingPieceCount}" 
+                                         SnapsToDevicePixels="True"
+                                         UseLayoutRounding="False"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <!-- Tänne tulee Dummy luokan olioita, jotka eivät edusta mitään muuta kuin pelimerkkien määrää. Niillä ei ole mitään toimintoja tai propertyjä. 
+                             ViewModel vain antaa aloitusnappuamäärän verran dummy olioita, jotka sitten piirretään GameNappuloiksi. Ehkä jotain fiksumpaakin olisi voinnut tehdä, mutta tämä nyt 
+                             toimii tässä pelissä. -->
+                        <DataTemplate DataType="local:Dummy">
+                            <Viewbox Stretch="Uniform">
+                                <!-- Määritellään vielä pelimerkkien ulkonäköä, kuten värin bindaus 1. pelaajan väriin ja pelimerkin muotoon. Otetaan mitat P1Canvakseslta. -->
+                                <!-- jälleen kerran tulee hieman copy/pastemaista koodia. Katso vastaavasti pelaajan 2. koodia, kun sellainen tulee vastaan. Ainostaan bindaukset muuttuvat.-->
+                                <local:MyCanvas x:Name="P1Canvas" DockPanel.Dock="Top" MinHeight="50" MinWidth="50">
+                                    <local:GameNappula NappulaColor="{Binding Path=DataContext.Player1.PlayerColor, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                   NappulaType="{Binding Path=DataContext.Player1.PieceShapeId, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                   Width="{Binding ElementName=P1Canvas, Path=ActualWidth}"
+                                                   Height="{Binding ElementName=P1Canvas, Path=ActualHeight}"/>
+                                </local:MyCanvas>
+                            </Viewbox>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+            <!-- Tähän tulee pelialueen oikeapuoli, eli 2. pelaajan nimi ja nappulat. Tämä on hyvin samankaltainen kuin 1. pelaajan vastaava puoli, ja jotain refaktorointia olisi varmaankin pystynyt tekemään. 
+                 Copy/pastetus hieman kirpaisee sydämmestä, mutta tulipahan nyt tehtyä näin. Jos pelaajia olisi enemmän, niin tällainen peli ei vetelisi. -->
+            <Grid Grid.Row="1" Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="10*"/>
+                </Grid.RowDefinitions>
+                <Viewbox Grid.Row="0">
+                    <TextBlock x:Name="Pelaaja2TextBlock" Text="{Binding Path=Player2.PlayerName}" Foreground="{Binding Path=Player2.PlayerColor}">
+                        <TextBlock.Style>
+                            <!-- Tyyliä pelaajan 2 textblockille. Tuntuu vähän copypastemeiningiltä. Olkoon nyt näin ennen kuin keksin jotain parempaa. (Katso 1. pelaajan vastaavaa koodia.-->
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Player2.HasTurn}" Value="True">
+                                        <DataTrigger.EnterActions>
+                                            <BeginStoryboard x:Name="tt">
+                                                <Storyboard>
+                                                    <ColorAnimation
+                                                     Storyboard.TargetProperty="(TextBlock.Background).(SolidColorBrush.Color)"
+                                                     From="White" To="Red" Duration="0:0:0.5"
+                                                     AutoReverse="True" RepeatBehavior="Forever"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.EnterActions>
+                                        <DataTrigger.ExitActions>
+                                            <RemoveStoryboard  BeginStoryboardName="tt"></RemoveStoryboard>
+                                        </DataTrigger.ExitActions>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Viewbox>
+                <!-- 2 Pelaajan nappulat. Koodi on melko samanlainen kuin 1 pelaajan nappuloiden kohdalla, mutta eroja on kuitenkin parametrien ja bindausten kohdilla. 
+                     Jäykkää on siis ollut tämän ohjelmointiosion suunnittelu. TODO: Jos jää aikaa, niin refaktoroi kaikki se, jota vain pystyy. -->
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding Path=Player2Table}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="{Binding StartingPieceCount}" 
+                                         SnapsToDevicePixels="True"
+                                         UseLayoutRounding="False"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="local:Dummy">
+                            <Viewbox Stretch="Uniform">
+                                <local:MyCanvas x:Name="P2Canvas" DockPanel.Dock="Top" Width="50" Height="50" >
+                                    <local:GameNappula NappulaColor="{Binding Path=DataContext.Player2.PlayerColor, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                   NappulaType="{Binding Path=DataContext.Player2.PieceShapeId, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                   Width="{Binding ElementName=P2Canvas, Path=ActualWidth}"
+                                                   Height="{Binding ElementName=P2Canvas, Path=ActualHeight}"/>
+                                </local:MyCanvas>
+                            </Viewbox>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </Grid>
+        <Viewbox Grid.Row="2">
+            <TextBlock FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Path=GameMessage}"/>
+        </Viewbox>
+    </Grid>
+</Window>

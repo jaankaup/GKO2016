@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Mylly.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="P1Color" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Red</Value>
+    </Setting>
+    <Setting Name="P2Color" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Blue</Value>
+    </Setting>
+    <Setting Name="P1Name" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Erkki</Value>
+    </Setting>
+    <Setting Name="P2Name" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Jorma</Value>
+    </Setting>
+    <Setting Name="P1Shape" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Ympyrä</Value>
+    </Setting>
+    <Setting Name="P2Shape" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Kolmio</Value>
+    </Setting>
+    <Setting Name="BoardColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Thistle</Value>
+    </Setting>
+    <Setting Name="MapType" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Original</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -1,0 +1,131 @@
+﻿<UserControl x:Class="Mylly.GameNappula" x:Name="PeliNappula"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Mylly"
+             mc:Ignorable="d" 
+             d:DesignHeight="50" d:DesignWidth="50">
+    <UserControl.Resources>
+        <local:TranslateConverter x:Key="TConverter"/>
+        <!-- Määritellään yleiset ominaisuuden pelinappulan muodoille. -->
+        <Style x:Key="ShapeTyyli" TargetType="{x:Type Shape}">
+            <Setter Property="Fill" Value="Black"/>
+            <Setter Property="StrokeThickness" Value="2"/>
+            <Setter Property="Stroke" Value="Black"/>
+            <Setter Property="Height" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=ScaleHeight}"/>
+            <Setter Property="Width" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=ScaleWidth}"/>
+            <!-- Elikkäs. Nyt converterille annetaan ensin muodon mitat, ja sitten parentin mycanvaksen mitat. Konverteri luo nyt sellaisen TranslateTransformin, joka 
+                 "siirtää" muodon keskelle parenttina olevan mycanvaksen keskelle. -->
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <MultiBinding Converter="{StaticResource TConverter}">
+                        <Binding RelativeSource="{RelativeSource Self}" Path="ActualWidth"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="ActualHeight"/>
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:MyCanvas}" Path="ActualWidth"/>
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:MyCanvas}" Path="ActualHeight"/>
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            
+        </Style>
+
+    </UserControl.Resources>
+    <Grid>
+        <!-- Määritellään se miten GameNappula piirretään. Animoinnit tehdään Style.Triggersissä, ja Muut jutut ControlTemplate.Triggerissä. 
+             Kyseessä on hirveä hubbabubba binding hässäkkä, joka räjähtää käsiin jos erehtyy muuttamaan jotain, mutta se toimii! Järkevämpää olisi ollut tehdä 
+             komponentti ilman checkboxia, mutta tähän kului jo liikaa aikaa, niin en viitsinyt muuttaa tätä. Nyt checkboxin foreground on bindattu nappulan reunanväriksi, jotta 
+             nappulan reunan väri saadaan animoitua. Purkkaa on siis hieman käytetty. -->
+        <CheckBox x:Name="Nappula">
+            <CheckBox.Style>
+                <Style TargetType="{x:Type CheckBox}">
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Setter Property="IsEnabled" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}},Path=IsSelectable}"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <!-- Määritellään checkboxille uusi visuaalinen ulkonäkö, joka on siis pelinappulan näköinen.-->
+                            <ControlTemplate TargetType="{x:Type CheckBox}">
+                                <local:MyCanvas Background="Transparent" ScaleFactor="1.3"
+                                                Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=ScaleHeight}"
+                                                Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=ScaleWidth}">
+
+                                    <!-- Tähän tulevat pelinappulan mahdolliset eri muodot. -->
+                                    <Ellipse x:Name="Ellipsi" Fill="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}},Path=NappulaColor}"
+                                             Visibility="Hidden" Stretch="Fill" Stroke="{TemplateBinding Foreground}" StrokeThickness="4"
+                                             Style="{StaticResource ShapeTyyli}">
+                                        <!-- Nyt ellipsin hiiren klikkaus täytyy bindata sekä tässä että mainWindowissa. Ei oikein tunnu hyvältä, mutta muuten ei toimi. 
+                                             Lisäksi nyt tämä GameNappula controlli tulee riippuvaiseksi ViewModelista, mikä vaikeuttaa tämän komponentin yleiskäyttöisyyttä. -->
+                                        <Ellipse.InputBindings>
+                                            <MouseBinding MouseAction="LeftClick"
+                                            Command="local:MyllyViewModel.InsertPieceSelection"
+                                            CommandParameter="{Binding}"/>
+                                        </Ellipse.InputBindings>
+                                    </Ellipse>
+                                    <!-- Pelimerkin kolmiomuoto. Huomaa, että ellipsiltä bindataan ominaisuuksia. Syy tähän ovat alhaalla olevat triggerit. 
+                                         Kun pelimerkin piirtoon tulee muutoksia, niin ne ensin asetetaan ellipsiin, ja siitä bindataan kolmioon, ja myöhemmin neliöön. -->
+                                    <Polygon x:Name="Kolmio" Points="0,50,25,25,50,50" Fill="{Binding ElementName=Ellipsi, Path=Fill}" 
+                                             StrokeThickness="{Binding ElementName=Ellipsi, Path=StrokeThickness}" Stroke="{TemplateBinding Foreground}"
+                                             Style="{StaticResource ShapeTyyli}"
+                                             Stretch="Fill" Visibility="Hidden">
+                                        <!-- Tännekin tulee hiiren klikkaus bindaus. -->
+                                        <Polygon.InputBindings>
+                                            <MouseBinding MouseAction="LeftClick"
+                                            Command="local:MyllyViewModel.InsertPieceSelection"
+                                            CommandParameter="{Binding}"/>
+                                        </Polygon.InputBindings>
+                                    </Polygon>
+                                    <!-- Pelimerkin neliömuoto. -->
+                                    <Rectangle x:Name="Nelio" Fill="{Binding ElementName=Ellipsi, Path=Fill}"
+                                             StrokeThickness="{Binding ElementName=Ellipsi, Path=StrokeThickness}" Visibility="Hidden"
+                                             Style="{StaticResource ShapeTyyli}"
+                                             Stroke="{TemplateBinding Foreground}">
+                                        <!-- Ja tänne tulee taas hiiren klikkaus bindausta. -->
+                                        <Rectangle.InputBindings>
+                                            <MouseBinding MouseAction="LeftClick"
+                                            Command="local:MyllyViewModel.InsertPieceSelection"
+                                            CommandParameter="{Binding}"/>
+                                        </Rectangle.InputBindings>
+                                    </Rectangle>
+                                </local:MyCanvas>
+                                <ControlTemplate.Triggers>
+                                    <!-- Nappula typen arvolla 0 piirretään pallo. Parempi vaihtoehto olisi käyttää merkkijono "Ympyrä".-->
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}},Path=NappulaType}" Value="0">
+                                        <Setter TargetName="Ellipsi" Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <!-- Nappula typen arvolla 1 piirretään Kolmio. Parempi vaihtoehto olisi käyttää merkkijono "Kolmio".-->
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}},Path=NappulaType}" Value="1">
+                                        <Setter TargetName="Kolmio" Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <!-- Nappula typen arvolla 2 piirretään neliö. Parempi vaihtoehto olisi käyttää merkkijono "Neliö".-->
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}},Path=NappulaType}" Value="2">
+                                        <Setter TargetName="Nelio" Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <!-- Määrittää sen, miten nappula piirretään, jos sen on valittavissa ja valittu. -->
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}},Path=IsSelected}" Value="True">
+                                        <Setter TargetName="Ellipsi" Property="Fill" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}},Path=SelectionColor}"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}},Path=IsSelectable}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard x:Name="tt">
+                                    <Storyboard>                                    
+                                        <ColorAnimation Storyboard.TargetProperty="(CheckBox.Foreground).(SolidColorBrush.Color)"
+                                                         From="Black" To="Red" Duration="0:0:0.5"
+                                                         AutoReverse="True" RepeatBehavior="Forever"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <RemoveStoryboard  BeginStoryboardName="tt"></RemoveStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </CheckBox.Style>
+        </CheckBox>
+    </Grid>
+</UserControl>

@@ -1,0 +1,123 @@
+﻿<Window x:Class="Mylly.SettingsWindow" x:Name="Ikkuna"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Mylly"
+        mc:Ignorable="d"
+        Title="Mylly Game Settings" Height="300" Width="500"
+        ResizeMode="NoResize"> <!-- Settings valikon kokoa ei voi muuttaa. Toki tämänkin olisi voinnut tehdä niin että komponentit skaalautuvat kauniisti, mutta olkoot nyt näin. 
+                                    TODO: jos jää aikaa, niin laita sisältö skaalautumaan settings-ikkunan kokoa muutettaessa. -->
+    <!-- Asetetaan ikkunalle enter painalluksen commandi. Ei toimi aina ensimmäisellä kerralla. Tämä tulee ilmi, kun vaihtaa esim. pelaajan väriä, niin colorpicker ottaa ensimmäisen enterin. 
+         Vasta toinen enter painallus rekisteröityy ikkunalle. -->
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static local:SettingsWindow.EnterCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed"/>
+    </Window.CommandBindings>
+    <Window.Resources>
+        <!-- TextBoxin virhevalidointi-ilmoitus tyyli. -->   
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Foreground="Red" FontSize="20" Text="!"/>
+                            <Border BorderBrush="Red" BorderThickness="2" ToolTip="{Binding RelativeSource={RelativeSource self},
+                                    Path=Child.AdornedElement.(Validation.Errors)[0].ErrorContent}">
+                                <AdornedElementPlaceholder />
+                            </Border>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip"
+                        Value="{Binding RelativeSource={x:Static RelativeSource.Self},
+                        Path=(Validation.Errors)[0].ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+    </Window.Resources>
+    <!-- Hyvin yksinkertainen ja hieman tylsähkö settings valikko myllypelille.-->
+    <DockPanel>
+        <Grid Width="480" Height="80" DockPanel.Dock="Top" Margin="3,3,3,3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <!-- Ykköspelaajan tietoja. -->
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="PELAAJAN 1 NIMI" FontWeight="Black" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Panel.ZIndex="0">
+                    <TextBox.Text>
+                        <Binding ElementName="Ikkuna" Mode="TwoWay" Path="Player1Name" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <local:PlayerNameRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <!-- Kakkospelaajan tietoja.-->
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="PELAAJAN 2 NIMI" FontWeight="Black" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="0" Grid.Column="1">
+                    <TextBox.Text>
+                        <Binding ElementName="Ikkuna" Mode="TwoWay" Path="Player2Name" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <local:PlayerNameRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+            </Grid>
+            <!-- Ykkkös ja kakkos pelaajan värivalinta. -->
+            <wpfTool:ColorPicker Grid.Column="0" Grid.Row="1" SelectedColor="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=Player1Color}"/>
+            <wpfTool:ColorPicker Grid.Column="1" Grid.Row="1" SelectedColor="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=Player2Color}"/>
+            <!-- Ykkös ja kakos pelaajan muodon valinta. -->
+            <Grid Grid.Row="2" Grid.Column="0">
+                <ComboBox ItemsSource="{Binding ElementName=Ikkuna, Path=Muodot}" SelectedItem="{Binding ElementName=Ikkuna, Path=Player1Shape, Mode=TwoWay}"/>
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="1">
+                <ComboBox ItemsSource="{Binding ElementName=Ikkuna, Path=Muodot}" SelectedItem="{Binding ElementName=Ikkuna, Path=Player2Shape, Mode=TwoWay}"/>
+            </Grid>
+        </Grid>
+        <Grid DockPanel.Dock="Bottom">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+            </Grid.RowDefinitions>
+            <!-- Pelikentän pohjan värin valinta. -->
+            <wpfTool:ColorPicker Grid.Column="0" SelectedColor="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=GameBoardColor}"/>
+            <!-- Pelikenttätyypin vaitsemis combobox. -->
+            <Grid Grid.Row="1" Grid.Column="0">
+                <ComboBox ItemsSource="{Binding ElementName=Ikkuna, Path=Mapit}" SelectedItem="{Binding ElementName=Ikkuna, Path=CurrentMap, Mode=TwoWay}"/>
+            </Grid>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <!-- Nappulat. -->
+                <Button Grid.Column="0" Content="Ok" Click="Ok_Button_Click"/>
+                <Button Grid.Column="1" Content="Cancel" Click="Cancel_Button_Click"/>
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>
