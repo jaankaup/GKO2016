@@ -19,6 +19,8 @@ namespace Mylly.Tests
 
     /* TESTIT */
 
+    /* Versionumero 0.1.0
+
     [TestClass()]
     public class MyllyViewModelTests
     {

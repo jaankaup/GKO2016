@@ -1,0 +1,204 @@
+Mylly ohjelman metodin yksikkö/modulitestaus sekä lause- ja haarakattavuus testaus.
+
+Ryhmän nimi: jaankaup
+Tekijän nimi: Janne Kauppinen
+Sähköpostiosoite: janne.a.kauppinen@student.jyu.fi
+Dokumentin nimi: testaussuunnitelma
+Julkisuustaso: julkinen
+Päivämäärä: 5.9.2017
+Versio: 0.1.0
+Opintojakson nimi: TIES546 Ohjelmistotestaus
+Organisaatio: Jyväskylän yliopisto
+Laitos: Tietotekniikan laitos
+Projektin git url: git@yousource.it.jyu.fi:gko2016/gko2016.git
+
+1. Yleistä tietoa testattavasta ohjelmistosta.
+
+Testauksen kohteena on GKO 2016 kurssin harjoitus ohjelmointityö, Mylly peli.
+Ohjelma on windows pohjainen wpf-sovellus, jonka pääasiallisena
+ohjelmointikielenä on käytetty c#:aa. Graafinen käyttöliittymä on
+ohjelmoitu puolestaan XAML:lla, mutta tässä testauksessa keskitytään
+ainoastaan c#:lla ohjelmoituun koodiin. Mylly sovellus on tehty Microsoft
+Visual Studio 2015 Enterpricellä.
+
+2. MyllyViewModel luokka.
+
+Testauksen kohteena oleva ohjelma koostuu useasta luokasta ja XAML
+tiedostoista. MyllyViewModel on yksi ohjelman luokista. Se on paljon
+toimintoja omaava luokka, ja se pitää sisällään koko Mylly pelin
+toimintalogiikan ja tarvittavan rajapinnan pelin käyttöliittymälle.
+Käyttäjällä ei ole mahdollisuutta käyttää MyllyViewModel luokan ilmentymää
+suoraan, vaan kaikki käyttäjän toiminta ohjautuu ko. luokalle graafisen
+käyttöliittymän kautta. Graafinen käyttöliitymä käyttää MyllyViewModelin
+dependency propertyjä hyväkseen piirtäessään peliä näytölle. Graafisen
+käyttöliitymän tapahtumiin on rekisteröity MyllyViewModelin metodeja.
+Näin siis graafinen käyttöliittymä ei varsinaisesti sisällä pelin toiminta-
+logiikkaa vaan piirtää itseään riippuen MyllyViewModelin tilasta ja
+välittää käyttäjän syötteet ja toiminnot MyllyViewModelille dependecy
+propertyjen välityksellä. Graafinen käyttöliittymä siis kuuntelee jatkuvasti
+siihen liitettyjä MyllyViewModelin dependency propertyjä, ja lähettää
+itseensä kohdistuvat tapahtumat MyllyViewModelille rekisteröityjen
+metodien avulla. Graafinen käyttöliittymä ja MyllyViewModel ovat
+näin ollen kaksi toisistaan erillään olevaa kokonaisuutta, jotka ovat
+vain yhdistetty toisiinsta rajapintojensa kautta.
+
+MyllyViewModel on itsenäinen kokonaisuus/moduuli siinä mielessä, että sillä
+ei ole mitään riippuvuuksia käyttöliittymäkoodiin, joten itse graafinen
+käyttöliittymä on ohitettavissa kokonaan. MyllyViewModel luokka alustaa
+käytännössä katsoen koko Mylly pelin tarvitsemat attribuutit ja
+konfiguraatiot. Mylly ohjelma on toteutettu mvvm-mallin mukaisesti, joka
+on Microsoftin kehittämä 3-taso arkkitehtuurimalli. Tässä tapauksessa
+ylin taso on graafinen käyttöliittymä (XAML tiedostot, ns. view-kerros).
+Toinen alempi taso koostuu taas view-modeleista, joita tässä ohjelmassa on
+vain yksi (MyllyModelView). Alimpana tasoista on model-luokat, jotka ovat
+tässä sovelluksessa vain dataluokkia (esim. Block, Player, jne). Alemmalla
+tasolla olevat luokat tarjoavat rajapinnan ylemmälle tasolle. MyllyViewModel
+luokka edustaa siis kokonaan tässä 3-taso arkkitehtuurimallissa keskiosaa
+(vrt. testauspyramidin service kerrosta). Tarkempaa tietoa ohjelman
+rakenteesta ja sen luokista löytyy Mylly projektin lähdekoodista.
+
+3. Testauksen kohteena olevan metodin kuvaus.
+
+Testauksen kohteena on MyllyViewModel luokan InsertPieceSelection_Executed
+metodi. Kyseenomainen metodi on tapahtuma-metodi, joka käytännössä
+katsoen rekisteröidään käyttöliitymän hiiren vasemman puolisen nappulan
+klikkaustapahtumaan, erityisesti pelikentän komponentteihin. Kyseinen
+metodi pitää sisällään melko paljon toimintalogiikkaa. Metodissa tutkitaan
+ehtolauseilla pelin tiloja, tapahtuman kohteena olevan Block-olion tilaa,
+pelaajien tiloja, ja näiden tietojen pohjalta tehdään ratkaisuja miten
+pelin logiikka etenee. Metodi on jokseenkin huonosti dokumentoitu, sillä se
+luottaa monen loogisen tilan olevan oikein toimiakseen kunnolla, mutta
+mitään esi- tai jälkiehtoja ei ole kuitenkaan dokumentoitu, ainakaan kunnolla.
+
+Testattavan metodin määrittely on seuraavanlainen:
+
+InsertPieceSelection_Executed(object sender, ExecutedRoutedEventArgs e)
+
+Ohjelmassa sender parametri on turha. Se on käytännössä katsoen aina koko
+ohjelman pääikkuna, eikä tätä tietoa hyödynnetä tässä metodissa. Oleellinen
+asia on parametri e, ja erityisesti e.Parameter, jonka täytyy olla pelissä
+käytössä oleva, hiiren klikkauksen kohteena oleva, Block-olio. Myllypelin
+pelikenttä muodostuu kokoelmasta Block-oliota. Graafisessa
+käyttöliittymässä block on käytännössä katsoen yksi ruutu, joka pitää
+sisällään yhden pelikentän palasen, ja pelikenttä koostuu näistä palasista.
+Block-olio pitää sisällään tietoa siitä, onko siinä nappulapaikka, mihin
+suuntiin siitä voi kulkea, onko block valittu tai valittavissa, jne. 
+Testattava metodi tekee siis päätökset siitä, mitä tapahtuu kun jotain 
+tiettyä pelialueen palasta klikataan.
+
+4. Yleisiä asioita testauksesta, tavoitteista ja vaatimuksista.
+
+Tässä testauksessa on tarkoitus ohittaa graafinen käyttöliittymä ja
+tehdä yksikkötestausta MyllyViewModel luokan InsertPieceSelection_Executed
+metodille ohjelmallisesti ilman käyttäjän tapahtumia. Käyttöliittymän
+ohittamisen perusteena on muun muassa se, että tässä tehdään tutkittavalle
+metodille peruslohko- ja haarakattavuustestausta, ja täydellistä
+kattavuutta ei ole mahdollista suorittaa ohjelman graafisen käyttöliittymän
+kautta. Tosin testitapausten luonti voi olla hieman työläämpää kuin
+graafisen käyttöliittymän kautta tehdyt testit, mutta toisaalta testien
+toistettavuus on tällä tavalla tehtynä huomattavamman nopeampaa.
+
+Kunkin testin alussa saatetaan testattava ohjelma niin sanottuun testi-
+alkutilaan, ja testin lopussa testioraakkeli tarkistaa onko ohjelma
+halutunlaisessa lopputilassa. Tarkoituksena on suorittaa yksikkötestit
+sekä samalla tutkia metodin lause- ja haarakattavuutta. Lausekattavuutta
+varten Visual Studiossa on Analyse Code Coverage toiminto, jonka avulla
+saadaan nähtäville se, mitkä tutkittavan metodin koodista tulee suoritetuksi
+testitapauksissa. Code Coverage ei kuitenkaan ratkaise haarakattavuutta.
+Joissain tapauksissa haarakattavuus voi olla sama kuin lausekattavuus,
+mutta tässä testauksessa muodostetaan kuitenkin, esim. UMlet, ohjelmalla
+ohjausvuoverkko testattavasta metodista, ja sitten debuggaamalla katsotaan mitkä
+lauseet ja haarat kukin testi kattaa. Ajatuksena on, että graafiin merkitään
+kunkin testin numero jokaiseen graafin solmuun ja haaraan, jonka testi kattaa.
+
+Lisäksi pyritään testata hieman ohjelman toimintalogiikan johdonmukaisuutta
+sekä pyritään löytää mahdollsia virheitä ja puutteita (oraakkeli). Pääpainona
+on kuitenkin kattavuuskriteerien testaus (lause- ja haarakattavuus).
+Tarpeen vaatiessa (jos testiresurssit, eli tässä tapauksessa aika) käy
+vähiin, niin testioraakkeli sivuutetaan, ja keskitytään vain
+kattavuus krieereihin. Tällaisessa tapauksessa testin tulee aina epäonnistua,
+ja testiin sekä loppuraporttiin tulee kommentoida testioraakkelin
+puuttuminen.
+
+5. Tarkempia ohjeita testaukseen.
+
+MyllyViewModel luokan InsertPieceSelection_Executed metodin
+yksikkötestaus ja code coverage tehdään Visual Studio 2015
+Enterpricellä. Code coverage ominaisuus testaa mitkä koodi rivit tulee
+suoritetuksi yksikkötesteissä. Testauskäyttöjärjestelmänä toimii Windows 10.
+Koodin optimointi otetaan tarpeen mukaan pois testauksen ajaksi pois
+päältä, jotta saataisiin luotettavampi tulos lausekattavuutta tarkastaessa.
+Kukin testi tulee nimetä seuraavasti:
+
+   MyllyViewModelTest_n
+
+missä n on kunkin testin yksilöivä kokonaisluku. Luku n on oleellinen, sillä
+haarakattavuutta tutkiessa tämä luku merkitään niihin ohjausvuoverkon solmuihin
+ja kaariin, jotka kyseenomainen testi kattaa. Kaikki kyseeomaisesti nimetyt
+testimetodit muodostavat testijoukon, joka voidaan ajaa joko yksitellen tai
+kaikki testit yhdellä kertaa.
+
+Kunkin testin testipolku merkitään omaan ohjausvuoverkkotieodostoon, ja
+nimetään graph_MyllyViewModelTest_n, missä n on testin yksilöivä numero.
+Lisäksi luodaan graph_AllTests tiedosto, johon merkitään esim. ruksilla
+jokainen lauseke ja jokainen haara, jonka kaikki testit kattavat.
+Graph_AllTestsiin kannattaa tehdä ruksit kumulatiivisesti aina kunkin
+suoritetun testin jälkeen. Tarkoitus on saada merkki jokaiseen verkon
+solmuun ja haaraan. Tällöin koko testausmetodin lause- ja haarakattavuus
+on saavutettu.
+
+Testausprojekti luodaan varsinaisen Mylly ohjelman kanssa samaan solutioniin.
+Testausprojektin nimeksi on tarkoitus antaa MyllyTests. Mylly.Tests nimiavaruuden
+alle luodaan yksikkötestit Microsoft.VisualStudio.TestTools.UnitTesting
+kirjaston mukaisesti. Saman nimiavaruuden alle luodaan myös testaukseen
+liittyvät apu-metodit, testidata luokka ja oraakkeli. Tarkemmat metodien
+ja luokkien kuvaukset tulee kommentoida testausprojektin koodiin.
+
+Testauksessa on tarkoitus luoda yksinkertainen mylly kenttä:
+
+  O--O--O
+  |  |  |
+  O--O--O
+  |  |  |
+  O--O--O
+
+Tällä tavoin testidata on helpompi luoda ja analysoida. Tiedot
+testitapauksesta tulee kirjata yksikkötesteihin joko koodina
+tai/ja kommentteina. Päätarkoitus on se, että testeistä käy ilmi
+se mitä testataan ja mitä halutaan lopputulokseksi.
+
+Testioraakkeli on aliohjelma, joka vertaa ohjelman testauksen jälkeistä
+tilaa testaajan määrittelemään lopputilaan. Oraakkelin on tarkoitus
+tehdä ratkaisu siitä, että onnistuiko testi vai ei. Oraakkelin ja
+testausapumetodien testaus jätetään tekemättä ajapuutteen vuoksi.
+Tämä tekee oraakkelin tekemät päätökset epäluotettavimmiksi.
+Testioraakkeleille ja apumetodeille voidaan tehdä yksittäisiä
+mutaatiotatetstusta, mutta varsinaista yksikkötestausta ei tässä
+testauksessa tehdä.
+
+6. Testausraportista.
+
+Testausraporttiin tulee kirjata ainakin testattavan testin nimi, mahdollinen
+testin versionumero ja testioraakkelin tulos. Testiraportissa tulee myös
+mainita virhetilanteet ja niistä tulevat johtopäätökset. Lisäksi
+tekniset viat ja muut testausta rajoittavat tai estävät seikat tulee
+mainita testiraportissa. Myös testauksen ja metodin suunnittelun puutteet,
+parannusehdotukset ja muut testaajan mielestä olleelliset seikat tulee
+kirjata testausraporttiin. Jos testioraakkeliin tai dataan tehdään
+mutaatioita, niin testiraportissa olisi hyvä olla jokin maininta tästä.
+
+7. Testaajan osaamisvaatimukset.
+
+Testaajalta vaaditaan riittävä tuntemus c#:sta sekä Visual Studio 2015
+Enterpricestä, jotta hän pystyy luomaan yksikkötestit, testiapumetodit
+sekä testioraakkelin. Testaajalta vaaditaan myös tutkittavan ohjelman
+tuntemusta tai kykyä lukea lähdekoodia siinä määrin, että ymmärtää
+pääpiirteittäin miten ohjelma toimii. Itse graafisesta käyttöliittymästä
+tai XAML:sta ei tarvitse välittää tässä yhteydessä, mutta jonkinlainen
+ymmärrys wpf:stä ja tapahtumapohjaisesta ohjelmoinnista on oleellista,
+jotta testausympäristö, apumetodit ja testien luonti onnistuisi.
+
+8. Muuta huomioitavaa.
+
+Testiprojekti tulee ladata samaan versiohallintaan kuin varsinainen projekti.
+Projektin url: git@yousource.it.jyu.fi:gko2016/gko2016.git.
