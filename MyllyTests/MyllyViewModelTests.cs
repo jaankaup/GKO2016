@@ -19,15 +19,13 @@ namespace Mylly.Tests
 
     /* TESTIT */
 
-
     [TestClass()]
     public class MyllyViewModelTests
     {
         /// <summary>
-        /// Testi metodi, joka testaa ainoastaan sen tilanteen, että 
+        /// Testimetodi, joka testaa ainoastaan sen tilanteen, että 
         /// InsertPieceSelection_Executed(object sender, ExecutedRoutedEventArgs e) 
         /// e.Param on null, eli ei ole Block luokan olio. Eli ohjelman tilan ei tulisi muuttua mitenkään. 
-        /// Lausekattavuuden ja haarakattavuuden osalta raportointi muualla.
         /// </summary>
         [TestMethod()]
         public void MyllyViewModelTest_1()
@@ -58,9 +56,13 @@ namespace Mylly.Tests
 
         /// <summary>
         /// Testaus tilanne. Peliruudukko on tyhjä. Pelaajilla ei ole pelimerkkejä kädessä. Asetetaan vuoro 1.pelaajalle. 
-        /// Asetetaan peli InsertState tilaan. Kutsutaan metodia siten, että ensimmäistä blocki läheteään metodille, eli pelialueen 
+        /// Asetetaan peli InsertState tilaan. Kutsutaan metodia siten, että ensimmäinen blocki lähetetään metodille, eli pelialueen 
         /// vasen yläreuna, jossa on vapaa pelinappula paikka. Metodin tulee heittää poikkeus tällaisessa tilanteessa, jossa ollan 
-        /// insterModessa, mutta ei nappuloita ei ole kädessä. Testi hyväksytään, jos haluttu poikkeus saadaan aikaiseksi. 
+        /// insterModessa, mutta ei nappuloita ei ole kädessä.
+        /// 
+        /// Testi hyväksytään, jos saadaan 
+        /// 'InsertPieceSelection_Executer:Player1Table.Count == 0. Looginen virhe. Ei voi olla lisaystilassa jos napit on jo kaytetty'
+        /// poikkeus.
         /// </summary>
         [TestMethod()]
         public void MyllyViewModelTest_2()
@@ -98,7 +100,9 @@ namespace Mylly.Tests
         }
 
         /// <summary>
-        /// Vastaava tilanne kuin MyllyViewModelTest_2:sessa, mutta nyt vuorossa on 2. pelaaja. Haetaan oikeanlaista poikkeusta.
+        /// Vastaava tilanne kuin MyllyViewModelTest_2:sessa, mutta nyt vuorossa on 2. pelaaja. 
+        /// Haetaan 'InsertPieceSelection_Executer:Player2Table.Count == 0. Looginen virhe. Ei voi olla lisäystilassa jos napit on jo käytetty'
+        /// poikkeusta.
         /// </summary>
         [TestMethod()]
         public void MyllyViewModelTest_3()
@@ -266,7 +270,7 @@ namespace Mylly.Tests
                 shouldBeData.Blocks[i].IsSelectable = true;
             }
             shouldBeData.Player1.HasTurn = true;
-            // shouldBeData.Player2.HasTurn = false;
+            shouldBeData.Player2.HasTurn = false;
 
             // Testataan.
             var result = TestHelper.DoWholeTest(initialData, shouldBeData, 0);
@@ -498,6 +502,8 @@ namespace Mylly.Tests
             shouldBeData.GameState = MyllyViewModel.GameState.GameOver;
             shouldBeData.Player2Table.Remove(shouldBeData.Player1Table.Last());
             shouldBeData.TheWinner = shouldBeData.Player1;
+            shouldBeData.Player1.HasTurn = false;
+            shouldBeData.Player2.HasTurn = false;
 
             // Testataan.
             var result = TestHelper.DoWholeTest(initialData, shouldBeData, 8);
@@ -591,8 +597,9 @@ namespace Mylly.Tests
         /// 1.pelaajalla on 4 nappulaa kädessään.
         /// 2.pelaajalla on 4 nappulaa kädessään.
         /// (yläkulma)A.IsContentSelected = true
-        /// S.Selectable = true
         /// Kaikkien muiden blockien IsContentSelected = false;
+        /// S.Selectable = true
+        /// 
         /// 
         /// *** Action: "klikataan" oikeaa alakulmaa. ***
         /// 
@@ -666,7 +673,7 @@ namespace Mylly.Tests
         /// Pelaaja 1 (A).
         /// Pelaaja 2 (B).
         /// 
-        /// ALKUTILANNE: Yläkulma on valittu, ja S ovat siirtomahdolisuudet.
+        /// ALKUTILANNE:
         /// 
         ///   O--O--O
         ///   |  |  |
@@ -712,6 +719,135 @@ namespace Mylly.Tests
 
             Assert.AreEqual(true, result.Item1, result.Item2);
         }
+
+        /// <summary>
+        /// Testiasetelma 12.
+        /// 
+        /// Pelaaja 1 (A).
+        /// Pelaaja 2 (B).
+        /// 
+        /// ALKUTILANNE: Yläkulma on valittu, ja S ovat siirtomahdolisuudet.
+        /// 
+        ///   A--S--O
+        ///   |  |  |
+        ///   S--A--A
+        ///   |  |  |
+        ///   B--B--B
+        /// 
+        /// Peli on moveStatessa. 
+        /// Vuoro on  1.pelaajalla.
+        /// 1.pelaajalla on 0 nappulaa kädessään.
+        /// 2.pelaajalla on 0 nappulaa kädessään.
+        /// (yläkulma)A.IsContentSelected = true
+        /// Kaikkien muiden blockien IsContentSelected = false;
+        /// S.Selectable = true
+        /// Kaikkien muiden blockien Selectable = false
+        /// 
+        /// 
+        /// *** Action: "klikataan" 1. indeksissä olevaa blockia, eli keskella/ylhäällä olevaa S:ää. ***
+        /// 
+        /// HALUTTU LOPPU TILANNE: Nyt yläkulmassa oleva A pitäisi siirtyä yhden verran oikealle. Vuoro siirtyy 2. pelaajalle. Nyt B:n nappulat ovat valittavina (IsContentSelectable = true). Muut blockien 
+        ///                        valintaan liittyvät propertyt ovat false.
+        /// 
+        /// Peli on moveTilassa.
+        /// Vuoro on  2.pelaajalla. 
+        /// 1.pelaajalla on 0 nappulaa kädessään.
+        /// 2.pelaajalla on 0 nappulaa kädessään.
+        /// kaikkien blockien Selectable = false
+        /// kaikkien blockien IsContentSelected = false
+        /// B blockien IsContentSelected = true
+        /// kaikkien muiden blockien IsContentSelected = false
+        /// 
+        /// 
+        ///   O--A--O
+        ///   |  |  |
+        ///   O--A--A
+        ///   |  |  |
+        ///   B--B--B
+        /// 
+        /// LOPPUHUOMIOT:
+        /// 
+        /// 
+        /// 
+        /// </summary>
+        [TestMethod()]
+        public void MyllyViewModelTest_12()
+        {
+            // Luodaan lähtötiladata.
+            var initialData = new TestData();
+            initialData.GameState = MyllyViewModel.GameState.MoveState;
+            initialData.Player1.HasTurn = true;
+            initialData.AddPiecesToHand(TestData.PlayerTableId.One, 0);
+            initialData.AddPiecesToHand(TestData.PlayerTableId.Two, 0);
+
+            // Luodaan blockit.
+            initialData.CreateBlocksFromArray(initialData.TestBlockData);
+
+            // 1. pelaaja blockit.
+            initialData.Blocks[0].HasPiece = true;
+            initialData.Blocks[0].BlockOwner = initialData.Player1;
+            initialData.Blocks[0].IsContentSelected = true;
+            initialData.Blocks[0].IsContentSelectable = true;
+
+            initialData.Blocks[4].HasPiece = true;
+            initialData.Blocks[4].IsContentSelectable = true;
+            initialData.Blocks[4].BlockOwner = initialData.Player1;
+
+            initialData.Blocks[5].HasPiece = true;
+            initialData.Blocks[5].IsContentSelectable = true;
+            initialData.Blocks[5].BlockOwner = initialData.Player1;
+
+
+            // 2. pelaaja blockit.
+            initialData.Blocks[6].HasPiece = true;
+            initialData.Blocks[6].BlockOwner = initialData.Player2;
+
+            initialData.Blocks[7].HasPiece = true;
+            initialData.Blocks[7].BlockOwner = initialData.Player2;
+
+            initialData.Blocks[8].HasPiece = true;
+            initialData.Blocks[8].BlockOwner = initialData.Player2;
+
+            // S-blockit.
+            initialData.Blocks[1].IsSelectable = true;
+            initialData.Blocks[3].IsSelectable = true;
+
+            // Luodaan lopputilanne.
+            var shouldBeData = TestHelper.CloneTestData(initialData);
+
+            // 1. pelaaja.
+            shouldBeData.Blocks[0].HasPiece = false;
+            shouldBeData.Blocks[0].BlockOwner = null;
+            shouldBeData.Blocks[0].IsContentSelected = false;
+            shouldBeData.Blocks[0].IsContentSelectable = false;
+
+            shouldBeData.Blocks[1].IsSelectable = false;
+            shouldBeData.Blocks[1].HasPiece = true;
+            shouldBeData.Blocks[1].BlockOwner = shouldBeData.Player1;
+
+            shouldBeData.Blocks[4].IsContentSelectable = false;
+            shouldBeData.Blocks[5].IsContentSelectable = false;
+
+            // indeksissä 3 oleva S.
+            shouldBeData.Blocks[3].IsSelectable = false;
+
+            // 2. pelaaja.
+
+            shouldBeData.Blocks[6].IsContentSelectable = true;
+            shouldBeData.Blocks[7].IsContentSelectable = true;
+            shouldBeData.Blocks[8].IsContentSelectable = true;
+
+            shouldBeData.Player1.HasTurn = false;
+            shouldBeData.Player2.HasTurn = true;
+
+            // Testataan.
+            var result = TestHelper.DoWholeTest(initialData, shouldBeData, 1);
+
+            Assert.AreEqual(true, result.Item1, result.Item2);
+        }
+
+
+
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1264,7 +1400,7 @@ namespace Mylly.Tests
             }
         }
 
-
+        // Keskeneräinen. TODO: tee loppuun jos ehdit. Ei välttämätön testaamisen kannalta, mutta olisi kuitenkin ihan hyvä.
         public static String TestDataToString(TestData td)
         {
             StringBuilder sb = new StringBuilder();
@@ -1301,6 +1437,14 @@ namespace Mylly.Tests
             return "";
         }
 
+        /// <summary>
+        /// Testaa sen, ovatko kaksi parametrina olevaa TestDataa arvoiltaan samanlaiset. Jos eroavaisuuksia tulee, niin ne lisätään 
+        /// parametriin errMsg.
+        /// </summary>
+        /// <param name="actualData">Todelinen testidata.</param>
+        /// <param name="shouldBeData">halutunlaisessa tilassa oleva testidata.</param>
+        /// <param name="errMsg">Testidatojen eroavaisuudet lisätään tähän.</param>
+        /// <returns>true, jos TestDatat ovat arvoiltaan samat, muuten false.</returns>
         public static bool TestDataEquals(TestData actualData, TestData shouldBeData, StringBuilder errMsg)
         {
             // Kriittisiä null tarkistuskia.
@@ -1363,6 +1507,8 @@ namespace Mylly.Tests
             // Testataan blockit.
             testOk = CompareBlocks(actualData.Blocks, shouldBeData.Blocks, errMsg);
 
+            // jos pelaajien nimet ovat null, niin tällöin ollaan epäonnistuttu. Lähtöoletuksena on se, että nimet eivät saa olla null.
+            // TODO: dokumentoi tämä oletus jonnekin.
             if (actualData.Player1.PlayerName == null || shouldBeData.Player1.PlayerName == null)
             {
                 testOk = false;
@@ -1374,6 +1520,11 @@ namespace Mylly.Tests
             {
                 testOk = false;
                 errMsg.Append(String.Format("Player1.PlayerName pitäisi olla {0}, mutta on nyt {1}.\n", shouldBeData.Player1.PlayerName, actualData.Player1.PlayerName));
+            }
+            else if (actualData.Player1.HasTurn != shouldBeData.Player1.HasTurn)
+            {
+                testOk = false;
+                errMsg.Append(String.Format("Player1.HasTurn pitäisi olla {0}, mutta on nyt {1}.\n", shouldBeData.Player1.HasTurn, actualData.Player1.HasTurn));
             }
 
             if (actualData.Player2.PlayerName == null || shouldBeData.Player2.PlayerName == null)
@@ -1387,6 +1538,11 @@ namespace Mylly.Tests
             {
                 testOk = false;
                 errMsg.Append(String.Format("Player2.PlayerName pitäisi olla {0}, mutta on nyt {1}.\n", shouldBeData.Player2.PlayerName, actualData.Player2.PlayerName));
+            }
+            else if (actualData.Player2.HasTurn != shouldBeData.Player2.HasTurn)
+            {
+                testOk = false;
+                errMsg.Append(String.Format("Player2.HasTurn pitäisi olla {0}, mutta on nyt {1}.\n", shouldBeData.Player2.HasTurn, actualData.Player2.HasTurn));
             }
 
             if (actualData.TheWinner == null && shouldBeData.TheWinner == null)
@@ -1409,6 +1565,8 @@ namespace Mylly.Tests
                     shouldBeData.TheWinner.PlayerName,
                     actualData.TheWinner.PlayerName));
             } 
+
+
 
             return testOk;
         }
