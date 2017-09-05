@@ -160,7 +160,5 @@ namespace Mylly
         // Using a DependencyProperty as the backing store for IsContentSelected.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsContentSelectedProperty =
             DependencyProperty.Register("IsContentSelected", typeof(bool), typeof(Block), new PropertyMetadata(false));
-
-
     }
 }

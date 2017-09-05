@@ -114,7 +114,7 @@ namespace Mylly
         /// Enum tyyppi pelin sen hetkiselle tilalle. GameStart tilaa ei käytetä tässä pelissä. mutta se on nyt jätetty siihen siltä varalta, että sille on jotain hyödyllistä käyttöä, 
         /// kuten esim. kun peli aukaistaan niin jokin tervetuloa animaatio, esim. pelin tekijät tmv.
         /// </summary>
-        private enum GameState { InsertState = 0, RemoveState = 1, MoveState = 2, GameOver = 3, GameStart = 4 }
+        public enum GameState { InsertState = 0, RemoveState = 1, MoveState = 2, GameOver = 3, GameStart = 4 }
 
         /// <summary>
         /// Enum erilaisia blokkien selectioita varten.
@@ -828,7 +828,7 @@ namespace Mylly
                 switch (Player1.HasTurn)
                 {
                     case true:
-                        if (Player1Table.Count == 0) throw new Exception("InsertPieceSelection_Executer:Player1Table.Count == 0. Looginen virhe. Ei voi olla lisäystilassa jos napit on jo käytetty");
+                        if (Player1Table.Count == 0) throw new Exception("InsertPieceSelection_Executer:Player1Table.Count == 0. Looginen virhe. Ei voi olla lisaystilassa jos napit on jo kaytetty");
                         break;
                     case false:
                         if (Player2Table.Count == 0) throw new Exception("InsertPieceSelection_Executer:Player2Table.Count == 0. Looginen virhe. Ei voi olla lisäystilassa jos napit on jo käytetty");
@@ -1033,7 +1033,7 @@ namespace Mylly
                     ClearAllSelectables();
                     // Poistetaan vapaiden paikkojen mahdollisuus. Siirrettävien nappuloiden siirtomahdollisuuden tutkitaan muualla.
                     // Korostetaan kaikki sellaiset pelimerkit, jotka ovat siirrettävissä. Tässä näytetään siis vastustajan liikutettavat merkit, sillä 
-                    // tässä jossain välissä vaihtuu vuoro. Tilakoneen tominta on nyt hajautettu ja hieman epäselvä, mutta se toimii tässä ohjelmassa.
+                    // tässä jossain välissä vaihtuu vuoro. Tilakoneen toiminta on nyt hajautettu ja hieman epäselvä, mutta se toimii tässä ohjelmassa.
                     ShowAllMovablePieces(GetPlayer(PlayerState.CurrentPlayer));
                     break;
                 case GameState.RemoveState:
