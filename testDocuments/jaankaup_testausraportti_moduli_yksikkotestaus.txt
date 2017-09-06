@@ -1,0 +1,596 @@
+Mylly ohjelman metodin yksikkˆ/modulitestaus sek‰ lause- ja haarakattavuus raportti.
+
+Ryhm‰n nimi: jaankaup
+Tekij‰n nimi: Janne Kauppinen
+S‰hkˆpostiosoite: janne.a.kauppinen@student.jyu.fi
+Dokumentin nimi: testausraportti
+Julkisuustaso: julkinen
+P‰iv‰m‰‰r‰: 6.9.2017
+Versio: 0.1.0
+Opintojakson nimi: TIES546 Ohjelmistotestaus
+Organisaatio: Jyv‰skyl‰n yliopisto
+Laitos: Tietotekniikan laitos
+Projektin git url: git@yousource.it.jyu.fi:gko2016/gko2016.git
+
+1. Testattava ohjelma ja testaussuunnitelma
+
+Testauksen kohteen on GKO2016 kurssin Mylly peli. Testauksessa
+k‰ytettiin jaankaup_testaussuunnitelma_moduli_yksikkotestus.txt
+testaussuunnitelmaa (versio 0.1.0). Testauksen kohteena oli
+Mylly ohjelman MyllyViewModel luokan InsertPieceSelection_Executed
+metodi, jolle tehtiin yksikkˆtestausta ja jonka p‰‰tarkoitus oli 
+testata metodin lause- ja haarakattavuutta. Lis‰ksi testauksessa
+pyrittiin etsim‰‰n ohjelmasta virheit‰ ja puutteita.
+
+2. Testiymp‰ristˆ
+
+Testiymp‰ristˆn‰ oli windows 10 ja ohjelmistona Visual Studio
+Enterprice 2015. Tietovuokaavio tehtiin UMLet ohjelmalla.
+
+3. Testauksen suorittaja
+
+Testauksen suorittajan toimii Janne Kauppinen. Testausp‰iv‰m‰‰r‰
+6.9.2017.
+
+4. Testauskerran tietoja
+
+T‰ss‰ testauskerrassa oli mukana yhteens‰ 12 testimetodia. Testit
+tehtiin Microsoft.VisualStudio.TestTools.UnitTesting kirjaston
+mukaisesti.
+
+Suoritettujen testimetodien lukum‰‰r‰ on 12 ja kaikki testit
+meniv‰t hyv‰ksytysti l‰pi. Eli kaikki testit saatiin suoritettua.
+Tosin testin laatimisen yhteydess‰ testej‰ ajettiin ja debugattiin
+niin monta kertaa, ett‰ testit meniv‰t lopulta l‰pi.
+
+Jotkut testit ep‰onnistuivat v‰lill‰, vaikka olivat aikaisemmin
+menneet l‰pi, sill‰ testioraakkelia kehitettiin sit‰ mukaan kuin
+testej‰kin, ja testioraakkelin virheet aiheuttivat v‰lill‰ testien
+ep‰onnistumisen.
+
+Testit, apumetodit ja oraakkeli saatiin p‰‰tˆkseen 5.9.2017, ja
+t‰llˆin kaikki testit meniv‰t l‰pi.
+
+Testien johtop‰‰tˆksi‰ on yhteens‰ viisi, ja ne kaikki liittyv‰t
+ohjelman toimintaan tai rakenteeseen. Jokaisesta testist‰ on
+nyt tehty oma ohjausvuoverkko, joka visualisoi ko. testin testipolun
+ja samalla n‰ytt‰‰ mik‰ osa graafista on peittyi.
+
+5. Testitapausten tietoja ja tuloksia
+
+Kunkin testit tarkat testiasetelmat ja toteus lˆytyy
+MyllyModelViewTests.cs tiedostosta. Testiasetelmat, alkutilanne,
+haluttu lopputilanne ja huomiot lˆytyv‰t kunkin testimetodin
+metodikuvauksesta. N‰m‰ tiedot ovat olleet pohjalla, kun itse
+testi‰ on toteutettu. Kunkin testimetodin testikuvaus on nyt
+kopioitu l‰hdekoodista. Ja kuten edell‰ mainittiin, kaikki testit
+ovat menneet l‰pi. 
+
+Lause- ja haarakattavuus saatutettiin kokonaan. Jokainen testi 
+kattoi ohjausvuoverkosta jotain, mit‰ muut eiv‰t kattaneet.
+Eli kaikkia 12 testi‰ tarvittiin, jotta kattavuuskriteerit
+saatiin saavutettua.
+
+5.1. MyllyViewModelTest_1_1
+
+Testiasetelma 1.
+
+        /// ALKUTILANNE:
+        ///
+        /// Alkutilanne on TestData default tila. T‰ss‰ tilalla ei
+        /// ole juurikaan v‰li‰, sill‰ mik‰‰n ohjelman tiloista ei
+        /// saisi muuttua t‰ss‰ testiss‰.
+        ///
+        /// *** Action: Ei l‰hetet‰ metodille block oliota, vaan null:in.  ***
+        ///
+        /// HALUTTU LOPPU TILANNE:
+        ///
+        /// Ei muutosta ohjelman tilaan.
+        ///
+        /// LOPPUHUOMIOT:
+        ///
+
+5.2. MyllyViewModelTest_1_2
+
+        /// Testiasetelma 2.
+        ///
+        ///
+        /// ALKUTILANNE:
+        ///
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///
+        ///
+        /// Peli on insertStatessa.
+        /// Vuoro on  1.pelaajalla.
+        /// 1.pelaajalla on 0 nappulaa k‰dess‰‰n.
+        ///
+        /// *** Action: "klikataan" vasenta yl‰kulmaa. ***
+        ///
+        /// HALUTTU LOPPU TILANNE:
+        ///
+        /// Testi hyv‰ksyt‰‰n, jos saadaan
+        /// 'InsertPieceSelection_Executer:Player1Table.Count == 0.
+        /// Looginen virhe. Ei voi olla lisaystilassa jos napit on jo
+        /// kaytetty' poikkeus.
+        ///
+        /// LOPPUHUOMIOT:
+        ///
+
+5.3. MyllyViewModelTest_1_3
+
+        ///
+        /// Testiasetelma 3.
+        ///
+        /// ALKUTILANNE:
+        ///
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///
+        ///
+        /// Peli on insertStatessa.
+        /// Vuoro on  2.pelaajalla.
+        /// 2.pelaajalla on 0 nappulaa k‰dess‰‰n.
+        ///
+        /// *** Action: "klikataan" vasenta yl‰kulmaa. ***
+        ///
+        /// HALUTTU LOPPU TILANNE:
+        ///
+        /// Testattava metodi heitt‰‰ poikkeuksen
+        ///  'InsertPieceSelection_Executer:Player2Table.Count == 0.
+        /// Looginen virhe. Ei voi olla lis‰ystilassa jos napit on jo
+        /// k‰ytetty'
+        ///
+        /// LOPPUHUOMIOT:
+        ///
+
+5.4. MyllyViewModelTest_1_4
+
+        /// Testiasetelma 4.
+        ///
+        /// Pelaaja 1 (A).
+        ///
+        /// ALKUTILANNE:
+        ///
+        ///   A--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///
+        ///
+        /// Peli on insertStatessa.
+        /// Vuoro on  1.pelaajalla.
+        /// 1.pelaajalla on 1 nappulaa k‰dess‰‰n.
+        ///
+        /// *** Action: "klikataan" vasenta yl‰kulmaa. ***
+        ///
+        /// HALUTTU LOPPU TILANNE:
+        ///
+        /// Peli on insertStatessa.
+        /// Vuoro on 1.pelaajalla.
+        /// 1.pelaajalla on 1 nappulaa k‰dess‰‰n.
+        /// Kaikki muut paitsi indeksiss‰ 0 olevan blockin
+        /// IsSelectable = true.
+        ///
+        ///   A--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///
+        /// LOPPUHUOMIOT:
+        ///
+        /// Mit‰ tapahtuu, jos peliruudukko on jo t‰ytt‰, ja
+        /// pelimerkkej‰ on k‰dess‰? P‰‰dyt‰‰nkˆ ikuiseen silmukkaan?
+
+5.5. MyllyViewModelTest_1_5
+
+        /// Testiasetelma 5.
+        ///
+        /// Pelaaja 1 (A).
+        /// Pelaaja 2 (B).
+        ///
+        /// ALKUTILANNE:
+        ///
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///
+        ///
+        /// Peli on insertStatessa.
+        /// Vuoro on  2.pelaajalla.
+        /// 1.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        /// 2.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        ///
+        /// *** Action: "klikataan" vasenta yl‰kulmaa. ***
+        ///
+        /// HALUTTU LOPPU TILANNE:
+        ///
+        /// Peli on insertStatessa.
+        /// Vuoro on 1.pelaajalla.
+        /// 1.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        /// 2.pelaajalla on 3 nappulaa k‰dess‰‰n.
+        ///
+        /// Kaikki paitsi 0-indeksiss‰ olevien blockien IsSelectable
+        /// arvot t‰ytyy olla true.
+        ///
+        ///   A--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///
+        /// LOPPUHUOMIOT:
+        ///
+        ///
+
+5.6. MyllyViewModelTest_1_6
+
+        /// Testiasetelma 6.
+        ///
+        /// Pelaaja 1 (A).
+        /// Pelaaja 2 (B).
+        ///
+        /// ALKUTILANNE:
+        ///
+        ///   O--A--A
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--B
+        ///
+        ///
+        /// Peli on insertStatessa.
+        /// Vuoro on  1.pelaajalla.
+        /// 1.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        /// 2.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        ///
+        /// *** Action: "klikataan" vasenta yl‰kulmaa. ***
+        ///
+        /// HALUTTU LOPPU TILANNE:
+        ///
+        /// Peli on removeStatessa.
+        /// Vuoro on 1.pelaajalla.
+        /// 1.pelaajalla on 3 nappulaa k‰dess‰‰n.
+        /// 2.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        /// Kaikkien blockien IsSelectable arvot pit‰‰ olla false.
+        /// Indeksiss‰ 8 olevan (B):n IsContentSelectable arvo t‰ytyy
+        /// olla true, muiden false.
+        ///
+        ///   A--A--A
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--B
+        ///
+        /// LOPPUHUOMIOT:
+        ///
+        /// Miten k‰y, jos A saa myllyn, ja B:ll‰ ei ole nappuloita pˆyd‰ss‰?
+        ///
+
+5.7. MyllyViewModelTest_1_7
+
+        /// Testiasetelma 7.
+        ///
+        /// Pelaaja 1 (A).
+        /// Pelaaja 2 (B).
+        ///
+        /// ALKUTILANNE:
+        ///
+        ///   A--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///
+        ///
+        /// Peli on removeStatessa.
+        /// Vuoro on  1.pelaajalla.
+        /// 1.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        /// yl‰kulman block.IsContentSelectable = false
+        ///
+        /// *** Action: "klikataan" vasenta yl‰kulmaa. ***
+        ///
+        /// HALUTTU LOPPU TILANNE:
+        ///
+        /// Peli on removeStatessa.
+        /// Vuoro on 1.pelaajalla.
+        /// 1.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        ///
+        ///   A--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///
+        /// LOPPUHUOMIOT:
+        ///
+        /// Mit‰ tapahtuu, jos yritet‰‰n poistaa omaa nappulaa?
+        /// N‰ytt‰isi silt‰, ett‰ t‰ss‰ luotetaan ettei sellaista
+        /// tilannetta tule. T‰llainen pit‰isi varmaankin dokumentoida
+        /// esiehdoksi, tai sitten tehd‰ joku ratkaisu koodiin, esim.
+        /// metodista poistuminen tai virheen k‰sittely.
+        ///
+
+5.8. MyllyViewModelTest_1_8
+
+        /// Testiasetelma 8.
+        ///
+        /// Pelaaja 1 (A).
+        /// Pelaaja 2 (B).
+        ///
+        /// ALKUTILANNE:
+        ///
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--B
+        ///
+        ///
+        /// Peli on removeStatessa.
+        /// Vuoro on  1.pelaajalla.
+        /// 1.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        /// 2.pelaajalla on 2 nappulaa k‰dess‰‰n.
+        ///
+        /// *** Action: "klikataan" oikeaa alakulmaa. ***
+        ///
+        /// HALUTTU LOPPU TILANNE:
+        ///
+        /// Peli on gameoverStatessa.
+        /// Kummallakaan pelaajalla ei ole vuoroa. (t‰m‰ selvi‰‰
+        /// ainoastaan lukemalla l‰hdekoodia ChangeState metodista).
+        /// 1.pelaajalla on 3 nappulaa k‰dess‰‰n.
+        /// 2.pelaajalla on 2 nappulaa k‰dess‰‰n.
+        /// TheWinner = 1.pelaaja.
+        ///
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///
+        /// LOPPUHUOMIOT:
+        ///
+        /// ChangeState metodilla, jolla vaihetaan pelin tiloja, ja
+        /// jota kutsutaan myˆs t‰st‰ testattavasta metodista on myˆs
+        /// paljon tomintalogiikkaa.
+        /// Toimintalogiikka on p‰‰lekk‰ist‰, ja n‰ytt‰isi silt‰, ett‰
+        /// metodit luottavat toistensa toimintaan, mutta t‰llainen
+        /// jaettu toimintalogiikka ilman kunnon dokumentointia aiheuttaa
+        /// suurella todenn‰kˆisyydell‰ ongelmatilanteita. T‰ss‰
+        /// tapauksessa voisi olla parempi, ett‰ toimintalogiikka olisi
+        /// yhdess‰ paikassa, eik‰ hajautettuna. Tai sitten t‰ytyisi tehd‰
+        /// metodeihin parempi virheentarkistus, ja/tai dokumentointi.
+        ///
+        
+5.9. MyllyViewModelTest_1_9
+
+        /// Testiasetelma 9.
+        /// 
+        /// Z.IsContentSelected = true
+        /// Q.IsContentSelected = true
+        /// 
+        /// ALKUTILANNE:
+        /// 
+        ///   Z--Q--O
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        /// 
+        /// 
+        /// Peli on moveStatessa. 
+        /// Vuoro on  1.pelaajalla. 
+        /// 1.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        /// 2.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        ///
+        /// *** Action: "klikataan" keskimm‰ist‰ blockia. ***
+        /// 
+        /// HALUTTU LOPPU TILANNE: 
+        /// 
+        /// Metodi heitt‰‰ poikkeuksen:
+        /// 
+        /// "InsercPiece_Executed: Ollaan IsMove tilassa, mutta pelaaja 
+        /// on muka valinnut useita nappuloita. Peli bugittaa."
+        /// 
+        /// LOPPUHUOMIOT:
+        /// 
+        ///
+        
+5.10. MyllyViewModelTest_1_10
+
+        /// Testiasetelma 10.
+        ///
+        /// Pelaaja 1 (A).
+        /// Pelaaja 2 (B).
+        /// 
+        /// ALKUTILANNE: Yl‰kulma on valittu, ja S ovat siirtomahdolisuudet.
+        /// 
+        ///   A--S--O
+        ///   |  |  |
+        ///   S--O--O
+        ///   |  |  |
+        ///   O--O--A
+        ///
+        /// Peli on moveStatessa.
+        /// Vuoro on  1.pelaajalla.
+        /// 1.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        /// 2.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        /// (yl‰kulma)A.IsContentSelected = true
+        /// Kaikkien muiden blockien IsContentSelected = false;
+        /// S.Selectable = true
+        ///
+        ///
+        /// *** Action: "klikataan" oikeaa alakulmaa. ***
+        ///
+        /// HALUTTU LOPPU TILANNE: (On klikattu oikeaa alakulmaa,
+        /// jolloin siit‰ tulee valittu ja T ovat uudet siirtomahdollisuudet.
+        /// 
+        /// Peli on moveTilassa.
+        /// Vuoro on  1.pelaajalla. 
+        /// 1.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        /// 2.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        /// (alakulma)A.IsContentSelected = true
+        /// (yl‰kulma)A.IsContentSelected = false
+        /// S.Selectable = false
+        /// T.Selectable = true
+        /// 
+        ///   A--S--O
+        ///   |  |  |
+        ///   S--O--T
+        ///   |  |  |
+        ///   O--T--A
+        /// 
+        /// LOPPUHUOMIOT:
+        /// 
+        /// Logiikka pett‰‰ hieman. Jos on nappuloita k‰dess‰, niin 
+        /// ei saisi olla liikutustilassa. Kannattaisi tehd‰ ehk‰ 
+        /// tarkistus t‰st‰. Toki itse peliss‰ t‰m‰ on t‰ll‰ hetkell‰ 
+        /// mahdoton tilanne, mutta t‰llainen tarkistus voisi olla ihan hyv‰.
+        ///
+        
+5.11. MyllyViewModelTest_1_11
+
+        /// Testiasetelma 11.
+        ///
+        /// Pelaaja 1 (A).
+        /// Pelaaja 2 (B).
+        ///
+        /// ALKUTILANNE:
+        ///
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///
+        /// Peli on moveStatessa.
+        /// Vuoro on  1.pelaajalla.
+        /// 1.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        /// 2.pelaajalla on 4 nappulaa k‰dess‰‰n.
+        /// Kaikkien blockien IsContentSelected = false;
+        /// Kaikkien blockien IsSelectable = false;
+        ///
+        /// *** Action: "klikataan" oikeaa alakulmaa. ***
+        ///
+        /// HALUTTU LOPPU TILANNE:
+        ///
+        /// Sama kuin alkutilanne.
+        ///
+        /// LOPPUHUOMIOT:
+        ///
+        
+5.12. MyllyViewModelTest_1_12
+
+        /// Testiasetelma 12.
+        /// 
+        /// Pelaaja 1 (A).
+        /// Pelaaja 2 (B).
+        /// 
+        /// ALKUTILANNE: Yl‰kulma on valittu, ja S ovat siirtomahdolisuudet.
+        /// 
+        ///   A--S--O
+        ///   |  |  |
+        ///   S--A--A
+        ///   |  |  |
+        ///   B--B--B
+        /// 
+        /// Peli on moveStatessa. 
+        /// Vuoro on  1.pelaajalla.
+        /// 1.pelaajalla on 0 nappulaa k‰dess‰‰n.
+        /// 2.pelaajalla on 0 nappulaa k‰dess‰‰n.
+        /// (yl‰kulma)A.IsContentSelected = true
+        /// Kaikkien muiden blockien IsContentSelected = false;
+        /// S.Selectable = true
+        /// Kaikkien muiden blockien Selectable = false
+        /// 
+        /// 
+        /// *** Action: "klikataan" 1. indeksiss‰ olevaa blockia, 
+        ///              eli keskella/ylh‰‰ll‰ olevaa S:‰‰. ***
+        /// 
+        /// HALUTTU LOPPU TILANNE:
+        /// Nyt yl‰kulmassa oleva A pit‰isi siirty‰ yhden verran oikealle.
+        /// Vuoro siirtyy 2. pelaajalle. Nyt B:n nappulat ovat valittavina
+        /// (IsContentSelectable = true). Muut blockien valintaan liittyv‰t
+        /// propertyt ovat false.
+        ///
+        /// Peli on moveTilassa.
+        /// Vuoro on  2.pelaajalla.
+        /// 1.pelaajalla on 0 nappulaa k‰dess‰‰n.
+        /// 2.pelaajalla on 0 nappulaa k‰dess‰‰n.
+        /// kaikkien blockien Selectable = false
+        /// kaikkien blockien IsContentSelected = false
+        /// B blockien IsContentSelected = true
+        /// kaikkien muiden blockien IsContentSelected = false
+        ///
+        ///
+        ///   O--A--O
+        ///   |  |  |
+        ///   O--A--A
+        ///   |  |  |
+        ///   B--B--B
+        ///
+        /// LOPPUHUOMIOT:
+        ///
+        
+6. Testauksen j‰lkeiset suositukset ja huomiot
+
+Lause- ja haarakattavuuden saavuttaminen oli melko suoraviivaista puuhaa, 
+mutta j‰rkevien esi- ja j‰lkiehtojen luonti testioraakkelia varten oli 
+melko tyˆl‰st‰. Tosin graafin luominen helpotti huomattavasti testitapausten 
+luontia, sill‰ siit‰ n‰ki selke‰mmin metodin toiminnan, ja siit‰ n‰ki
+selv‰sti mitk‰ solmut ja mitka haarat olivat jo peitetty, ja mitk‰ olivat
+viel‰ k‰ym‰tt‰ l‰pi.
+
+Testioraakkelin ja testiapumetodien luominen olivat melko tyˆl‰it‰, vaikka
+niiden luonti ei ollutkaan erityisen vaikeaa. Suuri puute t‰ss‰ projektissa
+oli se, ett‰ testiapumetodeja eik‰ oraakkeleita testattu oikeastaan mitenk‰‰n.
+Lis‰ksi koko testausymp‰ristˆ kasattiin melko kiireell‰, joten itse testaus-
+ymp‰ristˆst‰ saattaa lˆyty‰ virheit‰ ja puutteita (etenkin oraakkeli, apumetodit).
+
+Testioraakkeli n‰ytt‰ysi kuitenkin toimivan melko luotettavasti. Joitakin
+mutaatioita luotiin testidataan testiprojektin edetess‰, ja t‰llˆin
+testi aina ep‰onnistui, mik‰ oli tarkoituskin, mutta mit‰‰n varsinaista 
+testausta ei n‰ille metodeille ole tehty. Testioraakkeliin ei siis voi 
+t‰ysin luottaa, vaan se kaipaisi testausta.
+
+Testauksessa tuli selke‰sti ilmi se, ett‰ ohjelman toimintalogiikka perustuu
+vahvasti kahteen eri metodiin: testauksen kohteena ollut
+InsertPieceSelection_Executed metodi ja Changestate metodi. Ongelma 
+n‰iden kahden metodin v‰lill‰ on se, ett‰ ne riippuvat vahvasti toisistaan, 
+ja olettavat toistensa toimivan "oikealla tavalla". N‰in ohjelman 
+toimintalogiikka on hajautunut eri paikkoihin, mutta dokumentaatiosta 
+ei k‰y selke‰sti ilmi se, millaisia esi- ja j‰lkiehtoja metodeilla on,
+tai millaisilla olettamuksilla ne toimivat. Jotain on dokumentoitu, 
+mutta puuttellisesti.
+
+Jatkoa ajatellen ohjelman toimintalogiikka kannattaisi saattaa loogisesti
+yhteen paikkaa sen sijaan, ett‰ se olisi hajautettu.
+
+Lis‰ksi testauksessa tuli vahva ajatus, etenkin graafia katsottaessa, ett‰
+testattava aliohjelma on ehk‰ liian monimutkainen. Se kannattaisi ehk‰
+jakaa pienemmiksi aliohjelmiksi, jolloin sen ymm‰rt‰minen, yll‰pit‰minen ja
+testaaminen olisi todenn‰kˆisesti helpompaa.
+
+Testaajalle j‰i vahva tunne testattavasta metodista, ett‰ se ei
+k‰sittele riitt‰v‰n hyvin erilaisia virhetilanteita. T‰m‰ tehty testaus
+ei ole riitt‰v‰ kattamaan ohjelman toimintalogiikkaa, vaan se edellytt‰isi
+viel‰ huomattavan paljon enemm‰n testitapauksia ja testioraakkelin
+sek‰ testausapumetodien testausta.
+
+
+
+
+
+
+

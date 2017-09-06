@@ -19,18 +19,29 @@ namespace Mylly.Tests
 
     /* TESTIT */
 
-    /* Versionumero 0.1.0
+    /* Versionumero 0.1.0 */
 
     [TestClass()]
     public class MyllyViewModelTests
     {
         /// <summary>
-        /// Testimetodi, joka testaa ainoastaan sen tilanteen, että 
-        /// InsertPieceSelection_Executed(object sender, ExecutedRoutedEventArgs e) 
-        /// e.Param on null, eli ei ole Block luokan olio. Eli ohjelman tilan ei tulisi muuttua mitenkään. 
+        /// Testiasetelma 1.
+        /// 
+        /// ALKUTILANNE:
+        /// 
+        /// Alkutilanne on TestData default tila. Tässä tilalla ei ole juurikaan väliä, sillä mikään ohjelman tiloista ei saisi muuttua tässä testissä.
+        /// 
+        /// *** Action: Ei lähetetä metodille block oliota, vaan null:in.  ***
+        /// 
+        /// HALUTTU LOPPU TILANNE: 
+        /// 
+        /// Ei muutosta ohjelman tilaan.
+        /// 
+        /// LOPPUHUOMIOT:
+        /// 
         /// </summary>
         [TestMethod()]
-        public void MyllyViewModelTest_1()
+        public void MyllyViewModelTest_1_1()
         {
             // Luodaan lähtötiladata.
             var initialData = new TestData();
@@ -57,17 +68,36 @@ namespace Mylly.Tests
         }
 
         /// <summary>
-        /// Testaus tilanne. Peliruudukko on tyhjä. Pelaajilla ei ole pelimerkkejä kädessä. Asetetaan vuoro 1.pelaajalle. 
-        /// Asetetaan peli InsertState tilaan. Kutsutaan metodia siten, että ensimmäinen blocki lähetetään metodille, eli pelialueen 
-        /// vasen yläreuna, jossa on vapaa pelinappula paikka. Metodin tulee heittää poikkeus tällaisessa tilanteessa, jossa ollan 
-        /// insterModessa, mutta ei nappuloita ei ole kädessä.
         /// 
-        /// Testi hyväksytään, jos saadaan 
+        /// Testiasetelma 2.
+        ///
+        /// 
+        /// ALKUTILANNE:
+        /// 
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        /// 
+        /// 
+        /// Peli on insertStatessa. 
+        /// Vuoro on  1.pelaajalla. 
+        /// 1.pelaajalla on 0 nappulaa kädessään.
+        /// 
+        /// *** Action: "klikataan" vasenta yläkulmaa. ***
+        /// 
+        /// HALUTTU LOPPU TILANNE: 
+        /// 
+        /// Testi hyväksytään, jos saadaan
         /// 'InsertPieceSelection_Executer:Player1Table.Count == 0. Looginen virhe. Ei voi olla lisaystilassa jos napit on jo kaytetty'
         /// poikkeus.
+        /// 
+        /// LOPPUHUOMIOT:
+        /// 
         /// </summary>
         [TestMethod()]
-        public void MyllyViewModelTest_2()
+        public void MyllyViewModelTest_1_2()
         {
             // Luodaan lähtötiladata.
             var initialData = new TestData();
@@ -102,12 +132,34 @@ namespace Mylly.Tests
         }
 
         /// <summary>
-        /// Vastaava tilanne kuin MyllyViewModelTest_2:sessa, mutta nyt vuorossa on 2. pelaaja. 
-        /// Haetaan 'InsertPieceSelection_Executer:Player2Table.Count == 0. Looginen virhe. Ei voi olla lisäystilassa jos napit on jo käytetty'
-        /// poikkeusta.
+        /// 
+        /// Testiasetelma 3.
+        /// 
+        /// ALKUTILANNE:
+        /// 
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        ///   |  |  |
+        ///   O--O--O
+        /// 
+        /// 
+        /// Peli on insertStatessa. 
+        /// Vuoro on  2.pelaajalla. 
+        /// 2.pelaajalla on 0 nappulaa kädessään.
+        /// 
+        /// *** Action: "klikataan" vasenta yläkulmaa. ***
+        /// 
+        /// HALUTTU LOPPU TILANNE: 
+        /// 
+        /// Testattava metodi heittää poikkeuksen
+        ///  'InsertPieceSelection_Executer:Player2Table.Count == 0. Looginen virhe. Ei voi olla lisäystilassa jos napit on jo käytetty'
+        /// 
+        /// LOPPUHUOMIOT:
+        /// 
         /// </summary>
         [TestMethod()]
-        public void MyllyViewModelTest_3()
+        public void MyllyViewModelTest_1_3()
         {
             // Luodaan lähtötiladata.
             var initialData = new TestData();
@@ -179,7 +231,7 @@ namespace Mylly.Tests
         /// Mitä tapahtuu, jos peliruudukko on jo täyttä, ja pelimerkkejä on kädessä? Päädytäänkö ikuiseen silmukkaan?
         /// </summary>
         [TestMethod()]
-        public void MyllyViewModelTest_4()
+        public void MyllyViewModelTest_1_4()
         {
             // Luodaan lähtötiladata.
             var initialData = new TestData();
@@ -249,7 +301,7 @@ namespace Mylly.Tests
         /// 
         /// </summary>
         [TestMethod()]
-        public void MyllyViewModelTest_5()
+        public void MyllyViewModelTest_1_5()
         {
             // Luodaan lähtötiladata.
             var initialData = new TestData();
@@ -323,7 +375,7 @@ namespace Mylly.Tests
         /// 
         /// </summary>
         [TestMethod()]
-        public void MyllyViewModelTest_6()
+        public void MyllyViewModelTest_1_6()
         {
             // Luodaan lähtötiladata.
             var initialData = new TestData();
@@ -408,7 +460,7 @@ namespace Mylly.Tests
         /// 
         /// </summary>
         [TestMethod()]
-        public void MyllyViewModelTest_7()
+        public void MyllyViewModelTest_1_7()
         {
             // Luodaan lähtötiladata.
             var initialData = new TestData();
@@ -478,7 +530,7 @@ namespace Mylly.Tests
         /// 
         /// </summary>
         [TestMethod()]
-        public void MyllyViewModelTest_8()
+        public void MyllyViewModelTest_1_8()
         {
             // Luodaan lähtötiladata.
             var initialData = new TestData();
@@ -546,7 +598,7 @@ namespace Mylly.Tests
         /// 
         /// </summary>
         [TestMethod()]
-        public void MyllyViewModelTest_9()
+        public void MyllyViewModelTest_1_9()
         {
             // Luodaan lähtötiladata.
             var initialData = new TestData();
@@ -630,7 +682,7 @@ namespace Mylly.Tests
         /// 
         /// </summary>
         [TestMethod()]
-        public void MyllyViewModelTest_10()
+        public void MyllyViewModelTest_1_10()
         {
             // Luodaan lähtötiladata.
             var initialData = new TestData();
@@ -702,7 +754,7 @@ namespace Mylly.Tests
         /// 
         /// </summary>
         [TestMethod()]
-        public void MyllyViewModelTest_11()
+        public void MyllyViewModelTest_1_11()
         {
             // Luodaan lähtötiladata.
             var initialData = new TestData();
@@ -773,7 +825,7 @@ namespace Mylly.Tests
         /// 
         /// </summary>
         [TestMethod()]
-        public void MyllyViewModelTest_12()
+        public void MyllyViewModelTest_1_12()
         {
             // Luodaan lähtötiladata.
             var initialData = new TestData();

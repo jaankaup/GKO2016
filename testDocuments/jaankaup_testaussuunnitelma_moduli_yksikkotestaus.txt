@@ -130,22 +130,31 @@ Koodin optimointi otetaan tarpeen mukaan pois testauksen ajaksi pois
 päältä, jotta saataisiin luotettavampi tulos lausekattavuutta tarkastaessa.
 Kukin testi tulee nimetä seuraavasti:
 
-   MyllyViewModelTest_n
+   MyllyViewModelTest_i_j
 
-missä n on kunkin testin yksilöivä kokonaisluku. Luku n on oleellinen, sillä
+missä i on kunkin testin ohjaajalle julkistettu versionumero, ja j on 
+puolestaan testitapauksen numero. Luku j on oleellinen siinä mielessa, sillä
 haarakattavuutta tutkiessa tämä luku merkitään niihin ohjausvuoverkon solmuihin
 ja kaariin, jotka kyseenomainen testi kattaa. Kaikki kyseeomaisesti nimetyt
 testimetodit muodostavat testijoukon, joka voidaan ajaa joko yksitellen tai
 kaikki testit yhdellä kertaa.
 
 Kunkin testin testipolku merkitään omaan ohjausvuoverkkotieodostoon, ja
-nimetään graph_MyllyViewModelTest_n, missä n on testin yksilöivä numero.
+nimetään graph_MyllyViewModelTest_n, missä n on testitapauksen numero.
 Lisäksi luodaan graph_AllTests tiedosto, johon merkitään esim. ruksilla
-jokainen lauseke ja jokainen haara, jonka kaikki testit kattavat.
+jokainen lauseke ja jokainen haara, jonka kaikki testit kattavat. 
+Tähän tiedostoon merkitään myös testiajon versionumero ja testattavien 
+metodien nimet.
+
 Graph_AllTestsiin kannattaa tehdä ruksit kumulatiivisesti aina kunkin
 suoritetun testin jälkeen. Tarkoitus on saada merkki jokaiseen verkon
 solmuun ja haaraan. Tällöin koko testausmetodin lause- ja haarakattavuus
 on saavutettu.
+
+Graafit tulee tallentaa projektin juuressa sijaitsevaan graphs kansioon, 
+ja alakansioon, joka on muotoa version_i_j_k, missä i, j ja k ovat testaus-
+raportin versionumerot. Kussakin kansiossa tulee olla vielä pdf kansio, 
+johon tallennetaan graafien pdf versiot.
 
 Testausprojekti luodaan varsinaisen Mylly ohjelman kanssa samaan solutioniin.
 Testausprojektin nimeksi on tarkoitus antaa MyllyTests. Mylly.Tests nimiavaruuden
