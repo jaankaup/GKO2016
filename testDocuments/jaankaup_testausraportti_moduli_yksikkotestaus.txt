@@ -69,7 +69,10 @@ ovat menneet läpi.
 Lause- ja haarakattavuus saatutettiin kokonaan. Jokainen testi 
 kattoi ohjausvuoverkosta jotain, mitä muut eivät kattaneet.
 Eli kaikkia 12 testiä tarvittiin, jotta kattavuuskriteerit
-saatiin saavutettua.
+saatiin saavutettua. Visual Studion code coverage väritti 
+kaikki testattavan metodin koodit siniseksi, mikä tarkoitaa 
+sitä, että kaikki koodi tuli suoritettua kun testit ajettiin 
+läpi.
 
 5.1. MyllyViewModelTest_1_1
 
