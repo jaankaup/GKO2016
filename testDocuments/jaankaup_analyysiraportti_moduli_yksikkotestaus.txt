@@ -1,0 +1,109 @@
+Mylly ohjelman metodin yksikkö/modulitestaus sekä lause- ja haarakattavuus analyysiraportti.
+
+Ryhmän nimi: jaankaup
+Tekijän nimi: Janne Kauppinen
+Sähköpostiosoite: janne.a.kauppinen@student.jyu.fi
+Dokumentin nimi: analyysiraportti
+Julkisuustaso: julkinen
+Päivämäärä: 6.9.2017
+Versio: 0.1.0
+Opintojakson nimi: TIES546 Ohjelmistotestaus
+Organisaatio: Jyväskylän yliopisto
+Laitos: Tietotekniikan laitos
+Projektin git url: git@yousource.it.jyu.fi:gko2016/gko2016.git
+
+1. Kokemuksia harjoitustyöstä
+
+Tässä projektissa oli ainoastaa yksi tekijä, joten tässä raportissa 
+ei voi verrata eri tekijöiden suorittamia testauskertoja. Tässä 
+lähinnä keskitytään kertomaan harjoitustyöhön liittyviä kokemuksia ja 
+ajatuksia.
+
+1.1 Harjoutustyön haasteista
+
+Hajoitustyön suurimpia haasteita oli löytää jokin hyvä testatta kohde.
+Kun sellaista ei tahtonut löytyä, niin päätin ottaa vain jonkun
+testattavan kohteen aikaisemmista projekteistani. Mylly pelin
+tapahtumametodi vaikutti riittävän epätriviaalilta mutta kuitenkin
+kohtalaisen suoraviivaiselta testauskohteelta.
+
+Kun aloin tehdä testausapualiohjelmia, niin huomasin sen miten
+tärkeää on ottaa huomioon testaus ennen kuin koko ohjelma on
+valmis. Testien tekeminen jälkikäteen osoittautui melko hankalaksi.
+Tilannetta pahenti se, että koko Mylly projekti oli tehty niin
+sanotusi "hackaamalla" kasaan. Tarkoitan sillä sitä, että projekti
+oli tehty ilman mitään suurempaa suunnittelua, vaan luokkia ja
+metodeja luotiin lisää sitä mukaa kun oli tarve, ja mitä pitemmälle
+ohjelman kehitys oli edennyt, sitä vaikeampaa siihen oli tehdä
+enää mitään muutoksia. Näin ohjelmaan oli syntynyt esimekiksi
+sellainen tilanne, että ohjelman kontrollilogiikka oli jakautunut
+useaan eri paikkaan. Tämä vaikeutti testaamista oleellisesti,
+sillä oikeanlaisten testitapausten ja oraakkelidatan määrittelyä
+varten täytyi usein debugata ohjelmaa. Tällä tavalla selvisi se
+miten ohjelma toimii ja mitkä ovat testattavan metodin loppuehdot.
+
+Samalla "hacking" tyyliä käytin myös aputestimetodien ja oraakkelin
+ohjelmimisessa. Tämä johtui samasta syystä kuin myös testauksen
+kohteena ollut Mylly ohjelma: aikaa oli melko vähän käytettävissä.
+Ohjelminnissa oli tehtävä valintoja ajankäytön suhteen, ja näin
+oraakkeli ja siihen liittyvät aliohjelmat jäivät testaamatta.
+
+1.2. Harjoitustyön hyödyistä
+
+Suurin hyöty harjoitustyöstä oli se, että se auttoi ymmärtään sen,
+että testaus kannattaa aloittaa ihan ohjelman kehityksen alusta.
+Vaikka tilanne olisi se, että aikaa ei jossakin projektin vaiheessa
+olisi testaamiseen, niin ohjelma kannattaa pyrkiä rakentamaan niin,
+että testien kirjoittaminen myöhemmin olisi mahdollisimman helppoa.
+
+1.3. Testausten hyöty Mylly ohjelmalle
+
+Mylly peli on jo kuollut projekti siinä mielessä, ettei sen kehitystä
+enää jatketa. Mylly peli on jo tässä vaiheessa niin kompleksinen, ettei
+sitä olisi kovinkaan järkevää testata enempää. Testaaminen vain
+vahisti käsitystä siitä, että ko. ohjelma on hankala ylläpitää ja
+testata. Toki jonkinmoisilla muutoksilla mylly pelistä saisi aikaiseksi 
+jonkinlaisen nethack kaltaisen pelin. Peli peruskompnentit on pyritty
+tekemään yleishyödyllisiksi, ja perimällä luokkia niistä saisi ehkä
+laajennettua pelikenttää ja logiikkaa. Tällöin oleellisimmat
+testauskohteet tulisi sijoittaa Mylly ohjelman peruspalikoihin eli
+data-luokkiin ja MyllyViewModelin yleiskäyttöisimpiin kohtiin.
+Olisi ehkä järkevää tehdä yleiskäyttöinen ViewModel luokka, ja tehdä 
+yksikkötestausta sen metodeihin ja propertyihin. Pelin tomintalogiikka
+kannattaisi jättää tällöin vain rajapinnaksi, jonka voisi sitten
+erikoistaa ja testata myöhemmin.
+
+1.4. Vaihtoehtoisia toteutusmalleja
+
+Jos olisi ollut aikaa, niin olisi ollut hyvä tehdä sellainen testi,
+että yksi testi olisi suorittanut kokonaisen pelin. Eli testi olisi
+koostunut testattavan metodin kutsusarjasta, ja jokaisen kutsun
+välillä olisi voinnut tehdä tarkistuksen oraakkelilta. Näin olisi 
+voinnut tehdä ns. testipelisarjoja. Testipelin olisi voinnut näin 
+ollen hahmottaa vaikkapa aidolla myllypelilaudalla, ja sisällyttää 
+niihin harvinaisia erikoistilanteita.
+
+Myös testitapausten luonti graafisen käyttöliittymän kautta olisi
+ollut mielenkiintoista. Tämä olisi vaatinut toki
+graafisen käyttöliittymän uudistamisen testikäyttöön. Testin
+alkutilanne ja lopputilanne olisi voitu määritellä graafisen
+käyttöliittymän kautta, ja tämän jälkeen testausdata olisi
+tallentunut esimerkiksi ennaltamäärättyy tiedostoon, jonka jälkeen
+olisi voitu luoda itse testi. Myöskin ns. epäonnistuneet testit
+olisi ollut hyvä havainnollisia graafisen käyttöliittymän kautta,
+tai sitten tulosteena tiedostossa.
+
+1.5 Projektin aikataulut
+
+Itselläni jäi harjoitustyö melko viime hetkeen johtuen eläntilanteestani. 
+Aikataulua sotki alituisesti perheen asioiden hoitamiset, lastenhoitajien 
+rekrytoinnit ja muut vastaavat tekijät. Itse projekti tuli tehtyä pätkissä 
+noin 2 viikon sisällä. Kaikesta huolimatta projekti edistyi melkein
+aikataulussa. Ja se, että tein harjoitustyön itse, niin siinä oli se
+hyvä puoli, että pystyin itse miettimään ja toteuttamaan itsenäisesti
+harjoitustyön aikataulua.
+
+
+
+
+
