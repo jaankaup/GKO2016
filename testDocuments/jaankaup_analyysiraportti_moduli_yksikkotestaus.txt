@@ -59,7 +59,16 @@ testaamatta. Ainoita testauksen kaltaisia toimenpiteitä olivat
 mutaatioiden kylväminen testitapauksiin ja oraakkelin testidataan.
 Testit menivät kyllä rikki mutaatioita kylvämällä, mutta on
 todeenäköistä, että oraakkeliin ja testausapualiohjelmiin
-jäi virheitä ja/tai epäjohdonmukaisuuksia. 
+jäi virheitä ja/tai epäjohdonmukaisuuksia.
+
+Testidokumenttien otsikointi ja nimeämiset herättivät itsessäni 
+hieman epävarmuutta. Toki ohjeet oli annettu, mutta kuitenkin 
+esim. testiraporttien otsikointi tuntui melko oudoilta. On mahdollista 
+että en osannut tulkita ohjeita täysin oikein, tai sitten tiedoston 
+nimeämiset ja otsikoinnit olivat tarkoitettu tällaisiksi,
+jotta ohjaajien olisi helpompi hallita eri ryhmiltä tulevia
+raportteja. En tiedä menikö otsikoinnit aivan oikein, mutta 
+en halunnut käyttää liikaa aikaa sen pohtimiseen.
 
 1.2. Harjoitustyön hyötyjä ja parannusehdotuksia
 
